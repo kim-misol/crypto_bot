@@ -27,8 +27,6 @@ current_price = 20300000
 print("\ntype code_name: ", type(code_name))
 print("type current_price: ", type(current_price))
 
-print("\ntrue or false: ", type(code_name) == str)
-print("Type true or false: ", type(type(code_name) == str))
 
 print("\n*************************************ex2*************************************")
 '''문자열 합치기'''
