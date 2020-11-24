@@ -228,16 +228,17 @@ t = Test2()
 t.print()
 print(f"t.item.x : {t.item.x}, t.item.y : {t.item.y}")
 
-
 print("\n************************************* Misson *************************************")
+
+
 # Misson
 # 두 종목의 평균 수익 금액 계산해보기
 class Stock4:
     def __init__(self, stock_name, stock_close, stock_high, stock_low):
         self.name = stock_name  # 인스턴스변수 : self.name, self.close, self.high, self.low 인스턴스 변수라고 한다.
-        self.close = stock_close    # stock_close: 종가
-        self.high = stock_high      # stock_close: 고가
-        self.low = stock_low        # stock_close: 저가
+        self.close = stock_close  # stock_close: 종가
+        self.high = stock_high  # stock_close: 고가
+        self.low = stock_low  # stock_close: 저가
 
     def print(self):  # 메서드(method = function) : 클래스 내부에 정의 된 함수
         # 인스턴스 변수는 class 내의 다른 메서드에서 사용 가능
