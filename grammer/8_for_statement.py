@@ -75,7 +75,7 @@ for first in [('a', 'b', 'c'), ('d', 'e', 'f'), ('e', 'f', 'g')]:
 print("\n*************************************ex7*************************************")
 
 
-# 예를들어 우리가 OpenAPI를 통해 모 회사의 1월 1일부터 1월 8일까지의 일봉데이터를 daily_stock_price에 저장했다고 가정하자
+# 예를들어 우리가 OpenAPI를 통해 모 회사의 1월 1일부터 1월 8일까지의 일봉데이터를 daily_coin_price에 저장했다고 가정하자
 
 
 def save_to_db(data):
@@ -83,35 +83,35 @@ def save_to_db(data):
     print(f"{data}를 DB에 넣습니다...")
 
 
-daily_stock_price = [
-    ('2020-01-01', '18000', '삼성전자'), ('2020-01-02', '18200', '삼성전자'), ('2020-01-03', '18200', '삼성전자'),
-    ('2020-01-04', '18300', '삼성전자'), ('2020-01-05', '20000', '삼성전자'), ('2020-01-06', '19900', '삼성전자'),
-    ('2020-01-07', '21000', '삼성전자'), ('2020-01-08', '18100', '삼성전자')
+daily_coin_price = [
+    ('2020-01-01', '8300000', '비트코인'), ('2020-01-02', '8037000', '비트코인'), ('2020-01-03', '8474000', '비트코인'),
+    ('2020-01-04', '8482000', '비트코인'), ('2020-01-05', '8454000', '비트코인'), ('2020-01-06', '8866000', '비트코인'),
+    ('2020-01-07', '9398000', '비트코인'), ('2020-01-08', '9085000', '비트코인')
 ]
 
 # 이 데이터를 우리 DB에 차곡 차곡 넣고 싶을 때 직접 한 개 한 개 index를 지정해서 가져오면 힘들 것이다.
-save_to_db(daily_stock_price[0])
-save_to_db(daily_stock_price[1])
-save_to_db(daily_stock_price[2])
-save_to_db(daily_stock_price[3])
-save_to_db(daily_stock_price[4])
-save_to_db(daily_stock_price[5])
-save_to_db(daily_stock_price[6])
-save_to_db(daily_stock_price[7])
+save_to_db(daily_coin_price[0])
+save_to_db(daily_coin_price[1])
+save_to_db(daily_coin_price[2])
+save_to_db(daily_coin_price[3])
+save_to_db(daily_coin_price[4])
+save_to_db(daily_coin_price[5])
+save_to_db(daily_coin_price[6])
+save_to_db(daily_coin_price[7])
 
 # 만약 1년 치를 가져왔다고 생각해보면 코드는 끔찍하게 길어질 것이다. 이럴 때 아래와 같이 for문을 사용하면 간편해진다.
-for item in daily_stock_price:
+for item in daily_coin_price:
     save_to_db(item)
 
 
-# 미션 - daily_stock_price 리스트에 담겨있는 삼성전자의 데이터를 이용하여 5일동안의 평균값을 계산하여
-daily_stock_price = [
-    ('2020-01-01', 18000, '삼성전자'), ('2020-01-02', 18200, '삼성전자'), ('2020-01-03', 18200, '삼성전자'),
-    ('2020-01-04', 18300, '삼성전자'), ('2020-01-05', 20000, '삼성전자')
+# 미션 - daily_coin_price 리스트에 담겨있는 삼성전자의 데이터를 이용하여 5일동안의 평균값을 계산하여
+daily_coin_price = [
+    ('2020-01-01', 8300000, '비트코인'), ('2020-01-02', 8037000, '비트코인'), ('2020-01-03', 8474000, '비트코인'),
+    ('2020-01-04', 8482000, '비트코인'), ('2020-01-05', 8454000, '비트코인')
 ]
 
 sum_price = 0
-for item in daily_stock_price:
+for item in daily_coin_price:
     sum_price += item[1]
 clo5 = sum_price / 5
 print(clo5)
