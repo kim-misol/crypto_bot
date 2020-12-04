@@ -33,7 +33,7 @@ print("\n*************************************ex2*******************************
 
 
 #  tab 키로 띄워서
-class Stock:  # Stock 이라는 이름을 가진 클래스를 정의
+class Coin:  # Coin 이라는 이름을 가진 클래스를 정의
     def __init__(self, coin_name, coin_price,
                  coin_rate):  # __init__: '생성자'(특별한 함수) 라고 한다. 클래스의 객체를 만들 때 자동으로 실행이 된다.
         self.name = coin_name  # 인스턴스변수 : self.name, self.price, self.rate를 인스턴스 변수라고 한다.
@@ -41,13 +41,13 @@ class Stock:  # Stock 이라는 이름을 가진 클래스를 정의
         self.rate = coin_rate
 
 
-# item1, item2, item3은 객체 (=Stock이라는 클래스의 인스턴스)
-# 비트코인'를 Stock 클래스의 __init__ 생성자의 두번째 매개변수인 coin_name 전달.
+# item1, item2, item3은 객체 (=Coin이라는 클래스의 인스턴스)
+# 비트코인'를 Coin 클래스의 __init__ 생성자의 두번째 매개변수인 coin_name 전달.
 # 20293000는 coin_price로 전달
 # 0.96는 coin_rate로 전달
-item1 = Stock('비트코인', 20293000, 0.96)
-item2 = Stock('이더리움', 672500, 0.95)
-item3 = Stock('리플', 781, 16.05)
+item1 = Coin('비트코인', 20293000, 0.96)
+item2 = Coin('이더리움', 672500, 0.95)
+item3 = Coin('리플', 781, 16.05)
 
 print(f"coin_name: {item1.name}, price: {item1.price}, rate: {item1.rate}")
 print(f"coin_name: {item2.name}, price: {item2.price}, rate: {item2.rate}")
@@ -66,7 +66,7 @@ print("\n*************************************ex3*******************************
 '''
 
 
-class Stock2:  # Stock 이라는 이름을 가진 클래스를 정의
+class Coin2:  # Coin 이라는 이름을 가진 클래스를 정의
     def __init__(self, coin_name, coin_price, coin_rate):  # 메서드(method = function) : 클래스 내부에 정의 된 함수
         self.name = coin_name  # 인스턴스변수 : self.name, self.price, self.rate를 인스턴스 변수라고 한다.
         self.price = coin_price
@@ -74,18 +74,18 @@ class Stock2:  # Stock 이라는 이름을 가진 클래스를 정의
         print(f"self 의 일련번호: {id(self)}")
 
 
-# item1, item2, item3은 객체 (=Stock이라는 클래스의 인스턴스)
-item1 = Stock2('비트코인', 20293000, 0.96)
+# item1, item2, item3은 객체 (=Coin이라는 클래스의 인스턴스)
+item1 = Coin2('비트코인', 20293000, 0.96)
 
 # id() 내장 함수는 객체를 입력값으로 받아서 객체의 고유값(일련번호)을 반환하는 함수
 # 출력 결과 self의 일련번호와 동일
 print(f"item1 객체의 일련번호 : {id(item1)}\n")  # \n을 추가하면 한 줄 띄어서 출력
 
-item2 = Stock2('이더리움', 672500, 0.95)
+item2 = Coin2('이더리움', 672500, 0.95)
 
 print(f"item2 객체의 일련번호 : {id(item2)}\n")
 
-item3 = Stock2('리플', 781, 16.05)
+item3 = Coin2('리플', 781, 16.05)
 print(f"item3 객체의 일련번호 : {id(item3)}\n")
 
 print("\n*************************************ex4*************************************")
@@ -106,7 +106,7 @@ ex2) 객체가 자전거라면 바퀴의 크기, 색깔 같은 속성은 변수�
 '''
 
 
-class Stock3:
+class Coin3:
     def __init__(self, coin_name, coin_price, coin_rate):
         self.name = coin_name  # 인스턴스변수 : self.name, self.price, self.rate를 인스턴스 변수라고 한다.
         self.price = coin_price
@@ -120,12 +120,12 @@ class Stock3:
         self.price = new_price
 
 
-# item1 = Stock('비트코인', 20293000, 0.96)
-# item2 = Stock('이더리움', 672500, 0.95)
-# item3 = Stock('리플', 781, 16.05)
-item1 = Stock3('삼성전자', 60900, 3.5)
-item2 = Stock3('SK텔레콤', 238000, 20)
-item3 = Stock3('현대자동차', 165500, 3)
+# item1 = Coin('비트코인', 20293000, 0.96)
+# item2 = Coin('이더리움', 672500, 0.95)
+# item3 = Coin('리플', 781, 16.05)
+item1 = Coin3('삼성전자', 60900, 3.5)
+item2 = Coin3('SK텔레콤', 238000, 20)
+item3 = Coin3('현대자동차', 165500, 3)
 
 item1.print()
 item2.print()
@@ -209,7 +209,7 @@ class 안에서 객체 생성 예제
 '''
 
 
-class Test:  # Stock 이라는 이름을 가진 클래스를 정의
+class Test:  # Coin 이라는 이름을 가진 클래스를 정의
     def __init__(self, tx, ty):  # 메서드(method = function) : 클래스 내부에 정의 된 함수
         self.x = tx  # 인스턴스변수 : self.name, self.price, self.rate를 인스턴스 변수라고 한다.
         self.y = ty
@@ -223,7 +223,7 @@ class Test2:
         print(f"self.item.x : {self.item.x}, self.item.y : {self.item.y}")
 
 
-# item1, item2, item3은 객체 (=Stock이라는 클래스의 인스턴스)
+# item1, item2, item3은 객체 (=Coin이라는 클래스의 인스턴스)
 t = Test2()
 t.print()
 print(f"t.item.x : {t.item.x}, t.item.y : {t.item.y}")
@@ -233,7 +233,7 @@ print("\n************************************* Misson **************************
 
 # Misson
 # 두 종목의 평균 수익 금액 계산해보기
-class Stock4:
+class Coin4:
     def __init__(self, coin_name, coin_close, coin_high, coin_low):
         self.name = coin_name  # 인스턴스변수 : self.name, self.close, self.high, self.low 인스턴스 변수라고 한다.
         self.close = coin_close  # coin_close: 종가
@@ -257,8 +257,8 @@ class Calculator2:
         return round((self.x + self.y + self.z) / 3, 2)
 
 
-item1 = Stock4('삼성전자', 67700, 69500, 67000)
-item2 = Stock4('SK텔레콤', 232000, 235000, 229000)
+item1 = Coin4('삼성전자', 67700, 69500, 67000)
+item2 = Coin4('SK텔레콤', 232000, 235000, 229000)
 cal1 = Calculator2(item1.close, item1.high, item1.low)
 typical_price1 = cal1.average()
 
