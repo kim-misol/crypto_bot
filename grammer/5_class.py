@@ -240,10 +240,10 @@ class Coin4:
         self.high = coin_high  # coin_close: 고가
         self.low = coin_low  # coin_close: 저가
 
-    def print(self):  # 메서드(method = function) : 클래스 내부에 정의 된 함수
+    def print(self, avg):  # 메서드(method = function) : 클래스 내부에 정의 된 함수
         # 인스턴스 변수는 class 내의 다른 메서드에서 사용 가능
-        print(f"coin_name: {self.name}, close: {self.close}, high: {self.high}, low: {self.low}")
-
+        # print(f"coin_name: {self.name}, close: {self.close}, high: {self.high}, low: {self.low}")
+        print(f"{item2.name} 대표값: {avg}")
 
 class Calculator2:
     def __init__(self, close, high, low):
@@ -254,7 +254,8 @@ class Calculator2:
         return self.x + self.y + self.z
 
     def average(self):
-        return round((self.x + self.y + self.z) / 3, 2)
+        # return round((self.x + self.y + self.z) / 3, 2)
+        return (self.x + self.y + self.z) / 3
 
 
 item1 = Coin4('삼성전자', 67700, 69500, 67000)
@@ -266,6 +267,7 @@ cal2 = Calculator2(item2.close, item2.high, item2.low)
 typical_price2 = cal2.average()
 print(f"{item1.name} 대표값: {typical_price1}")
 print(f"{item2.name} 대표값: {typical_price2}")
+item1.print(typical_price2)
 
 # item1 = coin4('삼성전자', 67700, "20201124")
 # item2 = coin4('삼성전자', 67500, "20201123")
