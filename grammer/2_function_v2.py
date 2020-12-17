@@ -69,6 +69,13 @@ def print_date(month, day=1):
 print_date(month=12, day=31)  # 12월 31일
 # print_date()  # TypeError: print_date() missing 1 required positional argument: 'month'
 
+def print_date(month, day=1):
+    print(f"{month}월 {day}일")
+
+
+print_date(month=12)  # 12월 1일
+
+# print_date()  # TypeError: print_date() missing 1 required positional argument: 'month'
 
 # def print_date(day=1, month):   # SyntaxError: non-default argument follows default argument
 #     print(f"{month}월 {day}일")
