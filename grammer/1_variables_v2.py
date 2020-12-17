@@ -42,6 +42,7 @@ print(type(e))  # <class 'tuple'>
 print(e[0])  # 0
 print(e[1])  # 20210101
 
+print("\n************************************* String formatting *************************************")
 # F-Strings
 year = 2021
 month = 1
@@ -52,25 +53,38 @@ print(f"{year}년 {month}월 {day}일은 {day_of_week}입니다.")  # 2021년 1�
 # 대문자 F도 가능
 print(F"{year}년 {month}월 {day}일은 {day_of_week}입니다.")  # 2021년 1월 1일은 금요일입니다.
 
-"""
-[참고]
+print("\n************************************* multi line *************************************")
+# 작은따옴표 3개(''') 또는 큰따옴표 3개(""")를 사용하면 여러줄인 문자열을 변수에 대입할 수 있습니다.
+multi_line = """가나다
+라마바
+사아자"""
 
-문자열 String Indexing slicing method docstring
-https://velog.io/@ceres/Python-%EB%AC%B8%EC%9E%90%EC%97%B4-%EC%9D%B8%EB%8D%B1%EC%8B%B1-Indexing-1bk60g6n5y
+print(f"{multi_line}")
+# 출력
+# 가나다
+# 라마바
+# 사아자
 
-List | Indexing, slicing, 수정, 삭제
-https://velog.io/@ceres/Python-List
-List | 메소드 list.append(), pop(), sort(), count()
-https://velog.io/@ceres/Python-List-%EB%A9%94%EC%86%8C%EB%93%9C-list.append-sort-count
+print("\n************************************* '{}'.format() *************************************")
+a = "{0}년 {1}월 {2}일".format(2021, 1, 1)
+print(a)
+# 출력: 2021년 1월 1일
+b = "{2}년 {1}월 {0}일".format(1, 1, 2021)
+print(b)
+# 출력: 2021년 1월 1일
 
-Tuple | Packing, Unpacking
-https://velog.io/@ceres/Python-Tuple-Packing-Unpacking
+c = "{0}년 {1}월 {2}일 {3}".format(2021, 1, 1, '금요일')
+print(c)
+# 출력: 2021년 1월 1일 금요일
 
-for문 | 기본문,range(),중첩문
-https://velog.io/@ceres/Python-for
-for문 | comprehension
-https://velog.io/@ceres/Python-for%EB%AC%B8-comprehension
+year = 2021
+month = 1
+day = 1
+day_of_week = '금요일'
+d = "{0}년 {1}월 {2}일 {3}".format(year, month, day, day_of_week)
+print(d)
+# 출력: 2021년 1월 1일 금요일
 
-연산자 | 할당, 산술, 문자열, 비교, 논리, 멤버쉽 연산자
-https://velog.io/@ceres/Python-%EC%97%B0%EC%82%B0%EC%9E%90-%ED%95%A0%EB%8B%B9-%EC%82%B0%EC%88%A0-%EB%AC%B8%EC%9E%90%EC%97%B4-%EB%B9%84%EA%B5%90-%EB%85%BC%EB%A6%AC-%EB%A9%A4%EB%B2%84%EC%89%BD-%EC%97%B0%EC%82%B0%EC%9E%90
-"""
+e = "{year}년 {month}월 {day}일 {day_of_week}".format(year=2021, month=1, day=1, day_of_week='금요일')
+print(e)
+# 출력: 2021년 1월 1일 금요일
