@@ -2,4 +2,6 @@ pandas
 sqlalchemy
 flask_sqlalchemy
 pymysql
-flask
+finance-datareader
+BeautifulSoup4
+matplotlib
