@@ -11,21 +11,24 @@ def create_trade_book(sample):
     return book
 
 
-def tradings(sample, book):
-    for i in sample.index:
-        if sample.loc[i, 'Close'] > sample.loc[i, 'ubb']:  # 상단 밴드 이탈 시 동작 안함
-            book.loc[i, 'trade'] = ''
-        elif sample.loc[i, 'lbb'] > sample.loc[i, 'Close']:  # 하반 밴드 이탈 시 매수
-            if book.shift(1).loc[i, 'trade'] == 'buy':  # 이미 매수 상태라면
-                book.loc[i, 'trade'] = 'buy'  # 매수상태 유지
-            else:
-                book.loc[i, 'trade'] = 'buy'
-        elif sample.loc[i, 'lbb'] <= sample.loc[i, 'Close'] <= sample.loc[i, 'ubb']:  # 볼린저 밴드 안에 있을 시
-            if book.shift(1).loc[i, 'trade'] == 'buy':
-                book.loc[i, 'trade'] = 'buy'  # 매수상태 유지
-            else:
-                book.loc[i, 'trade'] = ''  # 동작 안 함
-    return book
+def tradings(sample, book, simul_num):
+    if simul_num == 1:
+        for i in sample.index:
+            if sample.loc[i, 'Close'] > sample.loc[i, 'ubb']:  # 상단 밴드 이탈 시 동작 안함
+                book.loc[i, 'trade'] = ''
+            elif sample.loc[i, 'lbb'] > sample.loc[i, 'Close']:  # 하반 밴드 이탈 시 매수
+                if book.shift(1).loc[i, 'trade'] == 'buy':  # 이미 매수 상태라면
+                    book.loc[i, 'trade'] = 'buy'  # 매수상태 유지
+                else:
+                    book.loc[i, 'trade'] = 'buy'
+            elif sample.loc[i, 'lbb'] <= sample.loc[i, 'Close'] <= sample.loc[i, 'ubb']:  # 볼린저 밴드 안에 있을 시
+                if book.shift(1).loc[i, 'trade'] == 'buy':
+                    book.loc[i, 'trade'] = 'buy'  # 매수상태 유지
+                else:
+                    book.loc[i, 'trade'] = ''  # 동작 안 함
+        return book
+    else:
+        print(f"{simul_num}번 알고리즘을 설정해주세요.")
 
 
 def returns(book):
@@ -62,23 +65,30 @@ def returns(book):
     return round(acc_rtn, 4)
 
 
-if __name__ == "__main__":
-    price_df = fdr.DataReader('BTC/KRW', '2018')  # 비트코인 원화 가격 (빗썸) 2016년~현재
+def data_settings(code, year_start):
+    price_df = fdr.DataReader(code, year_start)  # 비트코인 원화 가격 (빗썸) 2016년~현재
     # 결측치 존재 유무 확인
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
+    simul_start_date = "2018-01-01"
 
     if invalid_data_cnt == 0:
         df = price_df.loc[:, ['Close']].copy()
         bb_df = bollinger_band(df)
 
-        base_date = '2018-01-01'
-        sample = bb_df.loc[base_date:]
-        # 볼린더밴드 지표 수치 추가
+        sample = bb_df.loc[simul_start_date:]
+        return sample
+    return False
+
+
+if __name__ == "__main__":
+    sample = data_settings('BTC/KRW', '2018')
+    if len(sample) > 0:
         book = create_trade_book(sample)
-        book = tradings(sample, book)
+        simul_num = 1
+        book = tradings(sample, book, simul_num)
         earn = returns(book)
         print(book.tail(100))
 
-        # 변화 추이
+        # 누적 수익률 변화 추이
         book['acc return'].plot()
         plt.show()
