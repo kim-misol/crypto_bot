@@ -1,5 +1,6 @@
 import FinanceDataReader as fdr
 import numpy as np
+import matplotlib.pylab as plt
 
 from trading_indicators import *
 
@@ -50,12 +51,13 @@ def returns(book):
             buy = 0.0
             sell = 0.0
 
+    # 누적 수익률 계산
     acc_rtn = 1.0
     for i in book.index:
         rtn = book.loc[i, 'return']
         acc_rtn = acc_rtn * rtn  # 누적 수익률 계산
-        book.loc[i, ' acc return '] = acc_rtn
-    print(' Accunulated return :', round(acc_rtn, 4))
+        book.loc[i, 'acc return'] = acc_rtn
+    print('Accunulated return :', round(acc_rtn, 4))
 
     return round(acc_rtn, 4)
 
@@ -72,8 +74,11 @@ if __name__ == "__main__":
         base_date = '2018-01-01'
         sample = bb_df.loc[base_date:]
         # 볼린더밴드 지표 수치 추가
-        # print(sample.tail(10))
         book = create_trade_book(sample)
         book = tradings(sample, book)
         earn = returns(book)
         print(book.tail(100))
+
+        # 변화 추이
+        book['acc return'].plot()
+        plt.show()
