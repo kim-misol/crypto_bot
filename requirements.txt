@@ -5,3 +5,4 @@ pymysql
 finance-datareader
 BeautifulSoup4
 matplotlib
+backtrader
