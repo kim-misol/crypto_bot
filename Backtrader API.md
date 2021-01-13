@@ -1,6 +1,3 @@
-# Installation 
-`pip install backtrader`
-
 # Backtrader API
 파이썬 버전 3.2~3.7
 Matplorlib >= 1.4.1
@@ -19,9 +16,24 @@ Backtrader는 외부 라이브러이와 의존관계가 거의 없는 독립적�
 | 추가 비용이 없다	| | 
 | 클라우드 서비스를 이용하지 않아 개인 소스코드는 개인 소유물이다	| | 
 
-
+[Backtrader Documentation](https://www.backtrader.com/docu/)
 
 [Backtrader Github Repository](https://github.com/mementum/backtrader)
+
+# Installation 
+Basic requirements are:
+- Python 2.7
+- Python 3.2 / 3.3/ 3.4 / 3.5
+- pypy/pypy3  
+
+Additional requirements if plotting is wished:
+- Matplotlib >= 1.4.1
+
+```
+pip install backtrader
+```
+
+Install from pypi (including matplotlib)
 
 # trading strategy
 RSI (relative strength index) 보조지표를 이용
