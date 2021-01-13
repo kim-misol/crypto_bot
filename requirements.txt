@@ -6,3 +6,4 @@ finance-datareader
 BeautifulSoup4
 matplotlib
 backtrader
+pandas_datareader
