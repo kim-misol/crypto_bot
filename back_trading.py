@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import FinanceDataReader as fdr
 import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
@@ -35,6 +36,7 @@ class TestStrategy(bt.Strategy):
     전달값인 order의 다양한 attributes를 알고 싶다면 아래 링크 Documentation에서 확인할 수 있다. ex) order.size, order.price
     https://www.backtrader.com/docu/order/#order-notification
     '''
+
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
             return
@@ -54,6 +56,7 @@ class TestStrategy(bt.Strategy):
     거래가 일어났을 때 호출되는 메서드이다.
     trade.isclosed가 True일 때(Trade가 종료되었을 때) profit을 나타내는 코드이다
     '''
+
     def notify_trade(self, trade):
         if not trade.isclosed:
             return
@@ -71,6 +74,7 @@ class TestStrategy(bt.Strategy):
     주문을 하기 위해선 self.order = self.buy() 혹은 self.sell()을 하면 된다. 
     () 안에는 주문할 물량을 전달해 주면 된다.
     '''
+
     def next(self):
         self.i += 1
         if self.i < 20:
@@ -106,64 +110,80 @@ def data_settings(code, start=datetime(2018, 1, 1), end=datetime.today()):
     return False
 
 
-'''
-먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
-이 중 위 코드에서는 Open과 Close 두 가지 열만 선택
-'''
-# coin_data = pdr.DataReader('005930.KS', 'yahoo',
-#                            datetime(2016, 6, 1),
-#                            datetime.today())[['Open', 'Close']]
-# 데이터 가공
-coin_data = data_settings('BTC-USD',
-                               start=datetime(2018, 1, 1),
-                               end=datetime.today())
-if coin_data is not False:
-    '''
-    다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다. 
-    이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해 
-    초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻) 
-    등의 초기 설정을 할 수 있다.
-    '''
-    cerebro = bt.Cerebro()
-    cerebro.broker.setcash(100000.0)
-    cerebro.broker.setcommission(commission=0.001)
+def data_settings_with_fdr(code, year_start):
+    # 비트코인 원화 가격 (빗썸) 2016년~현재
+    price_df = fdr.DataReader(code, year_start)
+    # 결측치 존재 유무 확인
+    invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
-    '''
-    다음으론 백테스팅에 사용할 알고리즘을 addstrategy()를 이용해 넣는다. 
-    여기에 넣은 TestStrategy는 Strategy 클래스를 상속받아 만든 커스텀 클래스이다.
-    '''
-    cerebro.addstrategy(TestStrategy)
+    if invalid_data_cnt == 0:
+        price_df['Date'] = price_df.index
+        price_df['Open'] = price_df.iloc[:]['Open'].astype(np.float64)
+        price_df['Close'] = price_df.iloc[:]['Close'].astype(np.float64)
+        df = price_df.loc[:, ['Date', 'Open', 'Close']].copy()
+        return df
+    return False
 
-    '''
-    backtrader에 사용되는 데이터는 backtrader의 자체 데이터 구조를 사용한다. 
-    이러한 구조로 만들기 위해 자체적으로 제공하는 backtester.feeds 클래스를 사용한다. 
-    이 클래스 내에선 CSV, Pandas 등의 데이터 구조를 backtrader에 맞는 데이터 구조로 변환해주는 메서드를 제공한다. 
-    pandas dataframe을 사용했으므로, bt.feeds.PandasData를 사용해 dataname, open, close, volume, high와 같은 값들을 전달한다. 
-    전달된 값은 TestStrategy와 같은 백테스팅 알고리즘 내에서 사용될 수 있다. 
-    
-    만약 open값을 전달하지 않으면 
-    알고리즘 실행 후 cerebro.broker.getvalue()를 통해 포트폴리오 가치를 불러올 때 Nan이 리턴되므로, 
-    open값은 꼭 전달하도록 한다.
-    이렇게 데이터 생성이 끝나면, adddata()를 통해 데이터를 투입해준다.
-    '''
-    dataset = bt.feeds.PandasData(dataname=coin_data, open='Open', close='Close')
-    cerebro.adddata(dataset)
 
-    # 백테스팅 전 초기 자금 출력
-    deposit = cerebro.broker.getvalue()
-    print(f'Starting portfolio Value : {round(cerebro.broker.getvalue(), 2)}')
-    # cerebro.run()에서 백테스팅 알고리즘을 실행
-    cerebro.run()
+if __name__ == "__main__":
+    '''
+    먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
+    이 중 위 코드에서는 Open과 Close 두 가지 열만 선택
+    '''
+    # coin_data = pdr.DataReader('005930.KS', 'yahoo',
+    #                            datetime(2016, 6, 1),
+    #                            datetime.today())[['Open', 'Close']]
+    # 데이터 가공
+    # coin_data = data_settings('BTC-USD',
+    #                                start=datetime(2018, 1, 1),
+    #                                end=datetime.today())
+    coin_data = data_settings_with_fdr('BTC/KRW', '2018')
+    if coin_data is not False:
+        '''
+        다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다. 
+        이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해 
+        초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻) 
+        등의 초기 설정을 할 수 있다.
+        '''
+        cerebro = bt.Cerebro()
+        cerebro.broker.setcash(100000.0)
+        cerebro.broker.setcommission(commission=0.001)
 
-    # 백테스팅 종료 후 cerebro.broker.getvalue()를 실행시키면 알고리즘 시뮬 결과 출력
-    backtesting_result = f"""Final portfolio value : {round(cerebro.broker.getvalue(), 2)}
+        '''
+        다음으론 백테스팅에 사용할 알고리즘을 addstrategy()를 이용해 넣는다. 
+        여기에 넣은 TestStrategy는 Strategy 클래스를 상속받아 만든 커스텀 클래스이다.
+        '''
+        cerebro.addstrategy(TestStrategy)
+
+        '''
+        backtrader에 사용되는 데이터는 backtrader의 자체 데이터 구조를 사용한다. 
+        이러한 구조로 만들기 위해 자체적으로 제공하는 backtester.feeds 클래스를 사용한다. 
+        이 클래스 내에선 CSV, Pandas 등의 데이터 구조를 backtrader에 맞는 데이터 구조로 변환해주는 메서드를 제공한다. 
+        pandas dataframe을 사용했으므로, bt.feeds.PandasData를 사용해 dataname, open, close, volume, high와 같은 값들을 전달한다. 
+        전달된 값은 TestStrategy와 같은 백테스팅 알고리즘 내에서 사용될 수 있다. 
+        
+        만약 open값을 전달하지 않으면 
+        알고리즘 실행 후 cerebro.broker.getvalue()를 통해 포트폴리오 가치를 불러올 때 Nan이 리턴되므로, 
+        open값은 꼭 전달하도록 한다.
+        이렇게 데이터 생성이 끝나면, adddata()를 통해 데이터를 투입해준다.
+        '''
+        dataset = bt.feeds.PandasData(dataname=coin_data, open='Open', close='Close')
+        cerebro.adddata(dataset)
+
+        # 백테스팅 전 초기 자금 출력
+        deposit = cerebro.broker.getvalue()
+        print(f'Starting portfolio Value : {round(cerebro.broker.getvalue(), 2)}')
+        # cerebro.run()에서 백테스팅 알고리즘을 실행
+        cerebro.run()
+
+        # 백테스팅 종료 후 cerebro.broker.getvalue()를 실행시키면 알고리즘 시뮬 결과 출력
+        backtesting_result = f"""Final portfolio value : {round(cerebro.broker.getvalue(), 2)}
 Total Profit: {round(cerebro.broker.getvalue() - deposit, 2)}
 Rate: {round(cerebro.broker.getvalue() / deposit * 100, 2)}%
 """
-    print(backtesting_result)
-    # 그래프 그리기
-    # cerebro.plot()
+        print(backtesting_result)
+        # 그래프 그리기
+        # cerebro.plot()
 
-else:
-    print('데이터에 결측치가 존재합니다.')
-
+    else:
+        print('데이터에 결측치가 존재합니다.')
