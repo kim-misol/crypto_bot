@@ -2,6 +2,9 @@ import FinanceDataReader as fdr
 import backtrader as bt
 import numpy as np
 
+import datetime  # For datetime objects
+import os.path  # To manage paths
+import sys  # To find out the script name (in argv[0])
 
 # import matplotlib.pyplot as plt
 # %matplotlib inline
@@ -31,18 +34,29 @@ def data_settings(code, year_start):
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
     if invalid_data_cnt == 0:
-        price_df['Date'] = price_df.index
-        price_df['Adj Close'] = price_df['Close']
-        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']].copy()
+        price_df['datetime'] = price_df.index
+        price_df['open'] = price_df['Open']
+        price_df['high'] = price_df['High']
+        price_df['low'] = price_df['Low']
+        price_df['close'] = price_df['Close']
+        price_df['volume'] = price_df['Volume']
+        price_df['openinterest'] = price_df['Close']
+        # df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']].copy()
+        df = price_df.loc[:, ['datetime', 'open', 'high', 'low', 'close', 'volume', 'openinterest']].copy()
         return df
     return False
 
 
 class TestStrategy(bt.Strategy):
 
-    def log(self, txt, dt=None):
+    def _log(self, txt, dt=None):
         dt = dt or self.datas[0].datetime.date(0)
         print(f'{dt.isoformat()} {txt}')
+
+    def log(self, txt, dt=None):
+        ''' Logging function for this strategy'''
+        dt = dt or self.datas[0].datetime.date(0)
+        print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
         self.dataclose = self.datas[0].close
@@ -87,6 +101,41 @@ class TestStrategy(bt.Strategy):
                 self.order = self.sell(size=500)  # 500주 매도 주문
 
 
+# if __name__ == '__main__':
+#     # Create a cerebro entity
+#     cerebro = bt.Cerebro()
+#
+#     # Datas are in a subfolder of the samples. Need to find where the script is
+#     # because it could have been called from anywhere
+#     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
+#     datapath = os.path.join(modpath, './data/yhoo-2014.txt')
+#
+#
+#     # Create a Data Feed
+#     data = bt.feeds.YahooFinanceCSVData(
+#         dataname=datapath,
+#         # Do not pass values before this date
+#         fromdate=datetime.datetime(2000, 1, 1),
+#         # Do not pass values before this date
+#         todate=datetime.datetime(2000, 12, 31),
+#         # Do not pass values after this date
+#         reverse=False)
+#
+#     # Add the Data Feed to Cerebro
+#     cerebro.adddata(data)
+#
+#     # Set our desired cash start
+#     cerebro.broker.setcash(100000.0)
+#
+#     # Print out the starting conditions
+#     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
+#
+#     # Run over everything
+#     cerebro.run()
+#
+#     # Print out the final result
+#     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+#
 if __name__ == '__main__':
     # 전략을 활용할 자산은 미국 ETF 종목 중 하나인 QQQ (나스닥 100지수를 추종하는 ETF )다.
     # df = pd.read_csv('./QQQ.csv', index_col='DATE', parse_dates=['DATE'])
