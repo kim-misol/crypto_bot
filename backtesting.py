@@ -1,6 +1,9 @@
+import FinanceDataReader as fdr
 import backtrader as bt
-import pandas as pd
-import matplotlib.pyplot as plt
+import numpy as np
+
+
+# import matplotlib.pyplot as plt
 # %matplotlib inline
 
 # 상위 Strategy를 상속받아 구현
@@ -20,6 +23,19 @@ class MyStrategy(bt.Strategy):
         elif self.sma < self.data.close:
             # do something else
             pass
+
+
+def data_settings(code, year_start):
+    price_df = fdr.DataReader(code, year_start)  # 비트코인 원화 가격 (빗썸) 2016년~현재
+    # 결측치 존재 유무 확인
+    invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
+
+    if invalid_data_cnt == 0:
+        price_df['Date'] = price_df.index
+        price_df['Adj Close'] = price_df['Close']
+        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']].copy()
+        return df
+    return False
 
 
 class TestStrategy(bt.Strategy):
@@ -58,7 +74,6 @@ class TestStrategy(bt.Strategy):
         if not trade.isclosed:
             return self.log(f'OPERATION PROFIT, GROSS {trade.pnl}, NET {trade.pnlcomm}')
 
-
     def next(self):
         if self.order:  # self.order 변수로 현재 미체결 내역 확인
             return
@@ -74,21 +89,23 @@ class TestStrategy(bt.Strategy):
 
 if __name__ == '__main__':
     # 전략을 활용할 자산은 미국 ETF 종목 중 하나인 QQQ (나스닥 100지수를 추종하는 ETF )다.
-    df = pd.read_csv('./QQQ.csv', index_col='DATE', parse_dates=['DATE'])
+    # df = pd.read_csv('./QQQ.csv', index_col='DATE', parse_dates=['DATE'])
+    df = data_settings('005930', '2018')
     # 우리가 갖고 있는 데이터를 Backtrader에서 사용할 수 있는 규격에 맞춰야 한다.
     # 사용할 데이터를 Backtrader에서 제공하는 PandasData 함수에 전달하고 추후 사용할 수 있는 형태로 반환한다.
     data = bt.feeds.PandasData(dataname=df)
 
     # backtrader에서 실질적으로 전략을 움직이는 Cerebro() 객체를 할당
     cerebro = bt.Cerebro()
-    cerebro.addstrategy(TestStrategy)   # 전략을 추가
+    cerebro.addstrategy(TestStrategy)  # 전략을 추가
     cerebro.broker.setcommission(commission=0.001)  # 실제 거래에서 발생하게 될 수수료를 설정
-    cerebro.adddata(data, name=ticker)  # 변환된 데이터를 추가
-    cerebro.broker.setcash(100000.0)    # 보유 현금 액수를 설정
+    # cerebro.adddata(data, name=ticker)  # 변환된 데이터를 추가
+    cerebro.adddata(data, name='005930')  # 변환된 데이터를 추가
+    cerebro.broker.setcash(100000.0)  # 보유 현금 액수를 설정
+
     print(f'StartingPortfolioValue : {cerebro.broker.getvalue()}')
-    cerebro.run()   # 전략을 수행
+    cerebro.run()  # 전략을 수행
     print(f'FinalPortfolioValue: {cerebro.broker.getvalue()}')
     # 이미지를 저장하는 방식
     # (그림을 저장하려면 backtrader 라이브러리 내부 코드를 일부 수정해야 한다)
-    cerebro.plot(volume=False,savefig=True,path='./backtrader-plot.png')
-
+    cerebro.plot(volume=False, savefig=True, path='./backtrader-plot.png')
