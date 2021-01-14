@@ -5,6 +5,8 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
+from code_list import codes
+
 
 class TestStrategy(bt.Strategy):
 
@@ -30,6 +32,7 @@ class TestStrategy(bt.Strategy):
         self.pastMA20 = 0
         self.meanPrice = 0
         self.numberOfStocks = 0
+        self.simul_num = 1
 
     '''
     Buy나 Sell 등 오더가 일어났을 때 호출되는 메서드이다
@@ -124,8 +127,62 @@ def data_settings_with_fdr(code, year_start):
         return df
     return False
 
+def simul():
+    '''
+            다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다.
+            이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해
+            초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻)
+            등의 초기 설정을 할 수 있다.
+            '''
+    cerebro = bt.Cerebro()
+    cerebro.broker.setcash(1000000.0)
+    # cerebro.broker.setcommission(commission=0.001)
+    # 주식
+    cerebro.broker.setcommission(commission=0.0033)
+
+    '''
+    다음으론 백테스팅에 사용할 알고리즘을 addstrategy()를 이용해 넣는다. 
+    여기에 넣은 TestStrategy는 Strategy 클래스를 상속받아 만든 커스텀 클래스이다.
+    '''
+    cerebro.addstrategy(TestStrategy)
+
+    '''
+    backtrader에 사용되는 데이터는 backtrader의 자체 데이터 구조를 사용한다. 
+    이러한 구조로 만들기 위해 자체적으로 제공하는 backtester.feeds 클래스를 사용한다. 
+    이 클래스 내에선 CSV, Pandas 등의 데이터 구조를 backtrader에 맞는 데이터 구조로 변환해주는 메서드를 제공한다. 
+    pandas dataframe을 사용했으므로, bt.feeds.PandasData를 사용해 dataname, open, close, volume, high와 같은 값들을 전달한다. 
+    전달된 값은 TestStrategy와 같은 백테스팅 알고리즘 내에서 사용될 수 있다. 
+
+    만약 open값을 전달하지 않으면 
+    알고리즘 실행 후 cerebro.broker.getvalue()를 통해 포트폴리오 가치를 불러올 때 Nan이 리턴되므로, 
+    open값은 꼭 전달하도록 한다.
+    이렇게 데이터 생성이 끝나면, adddata()를 통해 데이터를 투입해준다.
+    '''
+    dataset = bt.feeds.PandasData(dataname=coin_data, open='Open', close='Close')
+    cerebro.adddata(dataset)
+
+    # 백테스팅 전 초기 자금 출력
+    deposit = cerebro.broker.getvalue()
+    print(f'Starting portfolio Value : {round(cerebro.broker.getvalue(), 2)}')
+    # cerebro.run()에서 백테스팅 알고리즘을 실행
+    cerebro.run()
+
+    # 백테스팅 종료 후 cerebro.broker.getvalue()를 실행시키면 알고리즘 시뮬 결과 출력
+    profit = round(cerebro.broker.getvalue() - deposit, 2)
+    rate = round(cerebro.broker.getvalue() / deposit * 100, 2) - 100
+    backtesting_result = f"""
+    Final portfolio value : {round(cerebro.broker.getvalue(), 2)}
+    Total Profit: {profit}
+    Rate: {rate}%
+    """
+    print(backtesting_result)
+    return profit, rate
+
 
 if __name__ == "__main__":
+    # 주식 종목 코드 리스트
+    code_list = codes
+    total_profit, sum_rate = 0, 0
     '''
     먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
     이 중 위 코드에서는 Open과 Close 두 가지 열만 선택
@@ -137,53 +194,23 @@ if __name__ == "__main__":
     # coin_data = data_settings('BTC-USD',
     #                                start=datetime(2018, 1, 1),
     #                                end=datetime.today())
-    coin_data = data_settings_with_fdr('BTC/KRW', '2018')
-    if coin_data is not False:
-        '''
-        다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다. 
-        이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해 
-        초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻) 
-        등의 초기 설정을 할 수 있다.
-        '''
-        cerebro = bt.Cerebro()
-        cerebro.broker.setcash(100000.0)
-        cerebro.broker.setcommission(commission=0.001)
+    # coin_data = data_settings_with_fdr('005930', '2018')
 
-        '''
-        다음으론 백테스팅에 사용할 알고리즘을 addstrategy()를 이용해 넣는다. 
-        여기에 넣은 TestStrategy는 Strategy 클래스를 상속받아 만든 커스텀 클래스이다.
-        '''
-        cerebro.addstrategy(TestStrategy)
+    simul_start = datetime.now()
+    print(f"시뮬 시작: {simul_start}")
 
-        '''
-        backtrader에 사용되는 데이터는 backtrader의 자체 데이터 구조를 사용한다. 
-        이러한 구조로 만들기 위해 자체적으로 제공하는 backtester.feeds 클래스를 사용한다. 
-        이 클래스 내에선 CSV, Pandas 등의 데이터 구조를 backtrader에 맞는 데이터 구조로 변환해주는 메서드를 제공한다. 
-        pandas dataframe을 사용했으므로, bt.feeds.PandasData를 사용해 dataname, open, close, volume, high와 같은 값들을 전달한다. 
-        전달된 값은 TestStrategy와 같은 백테스팅 알고리즘 내에서 사용될 수 있다. 
-        
-        만약 open값을 전달하지 않으면 
-        알고리즘 실행 후 cerebro.broker.getvalue()를 통해 포트폴리오 가치를 불러올 때 Nan이 리턴되므로, 
-        open값은 꼭 전달하도록 한다.
-        이렇게 데이터 생성이 끝나면, adddata()를 통해 데이터를 투입해준다.
-        '''
-        dataset = bt.feeds.PandasData(dataname=coin_data, open='Open', close='Close')
-        cerebro.adddata(dataset)
+    for code in code_list:
+        coin_data = data_settings_with_fdr(code, '2019')
 
-        # 백테스팅 전 초기 자금 출력
-        deposit = cerebro.broker.getvalue()
-        print(f'Starting portfolio Value : {round(cerebro.broker.getvalue(), 2)}')
-        # cerebro.run()에서 백테스팅 알고리즘을 실행
-        cerebro.run()
+        try:
+            # 해당 종목 시뮬
+            profit, rate = simul()
+            total_profit += profit
+            sum_rate += rate
+            print(f"현재까지의 수익: {total_profit}")
+        except:
+            print('데이터에 결측치가 존재합니다.')
 
-        # 백테스팅 종료 후 cerebro.broker.getvalue()를 실행시키면 알고리즘 시뮬 결과 출력
-        backtesting_result = f"""Final portfolio value : {round(cerebro.broker.getvalue(), 2)}
-Total Profit: {round(cerebro.broker.getvalue() - deposit, 2)}
-Rate: {round(cerebro.broker.getvalue() / deposit * 100, 2)}%
-"""
-        print(backtesting_result)
-        # 그래프 그리기
-        # cerebro.plot()
-
-    else:
-        print('데이터에 결측치가 존재합니다.')
+    total_rate = sum_rate / len(code_list)
+    print(f"총 수익: {total_profit}\n수익률: {total_rate}")
+    print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
