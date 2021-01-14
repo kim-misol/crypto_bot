@@ -32,7 +32,7 @@ class TestStrategy(bt.Strategy):
         self.pastMA20 = 0
         self.meanPrice = 0
         self.numberOfStocks = 0
-        self.simul_num = 1
+        self.simul_num = 2
 
     '''
     Buy나 Sell 등 오더가 일어났을 때 호출되는 메서드이다
@@ -85,15 +85,28 @@ class TestStrategy(bt.Strategy):
         else:
             MA5 = np.mean([self.close[n - 4] for n in range(5)])
             MA20 = np.mean([self.close[n - 19] for n in range(20)])
-            # 매수 조건
-            if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
-                amountToOrder = int(self.broker.getcash() / self.close[0])
-                self.order = self.buy(size=amountToOrder)
-                print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
-            # 매도 조건
-            elif self.meanPrice * 1.1 < self.close[0] and self.numberOfStocks != 0:
-                print(f"{self.datas[0].datetime.date(0)} - SELL : {self.close[0]}, sell amount : {self.numberOfStocks}")
-                self.order = self.sell(size=self.numberOfStocks)
+            if self.simul_num == 1:
+                # 매수 조건
+                if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
+                    amountToOrder = int(self.broker.getcash() / self.close[0])
+                    self.order = self.buy(size=amountToOrder)
+                    print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
+                # 매도 조건
+                elif self.meanPrice * 1.1 < self.close[0] and self.numberOfStocks != 0:
+                    print(f"{self.datas[0].datetime.date(0)} - SELL : {self.close[0]}, sell amount : {self.numberOfStocks}")
+                    self.order = self.sell(size=self.numberOfStocks)
+            # 5 20 골든크로스 데드크로스
+            elif self.simul_num == 2:
+                # 매수 조건
+                if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
+                    amountToOrder = int(self.broker.getcash() / self.close[0])
+                    self.order = self.buy(size=amountToOrder)
+                    print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
+                # 매도 조건
+                elif MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.numberOfStocks != 0:
+                    print(
+                        f"{self.datas[0].datetime.date(0)} - SELL : {self.close[0]}, sell amount : {self.numberOfStocks}")
+                    self.order = self.sell(size=self.numberOfStocks)
 
             # 과거 5,20일 이동 평균값을 저장해둔다
             self.pastMA5 = MA5
@@ -127,13 +140,14 @@ def data_settings_with_fdr(code, year_start):
         return df
     return False
 
-def simul():
+
+def simulator():
     '''
-            다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다.
-            이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해
-            초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻)
-            등의 초기 설정을 할 수 있다.
-            '''
+    다음으로는 backtrader의 몸통 역할을 하는 Cerebro() 객체를 만들어준다.
+    이렇게 만들어진 cerebro에는 cerebro.broker 클래스를 이용해
+    초기자금 설정(setcash()), 수수료 설정(setcommission(), commission=0.001은 0.1%수수료라는 뜻)
+    등의 초기 설정을 할 수 있다.
+    '''
     cerebro = bt.Cerebro()
     cerebro.broker.setcash(1000000.0)
     # cerebro.broker.setcommission(commission=0.001)
@@ -202,13 +216,13 @@ if __name__ == "__main__":
     for code in code_list:
         coin_data = data_settings_with_fdr(code, '2019')
 
-        try:
+        if coin_data is not False:
             # 해당 종목 시뮬
-            profit, rate = simul()
+            profit, rate = simulator()
             total_profit += profit
             sum_rate += rate
             print(f"현재까지의 수익: {total_profit}")
-        except:
+        else:
             print('데이터에 결측치가 존재합니다.')
 
     total_rate = sum_rate / len(code_list)
