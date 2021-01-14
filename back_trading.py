@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import FinanceDataReader as fdr
 import backtrader as bt
@@ -212,9 +212,12 @@ if __name__ == "__main__":
 
     simul_start = datetime.now()
     print(f"시뮬 시작: {simul_start}")
-
+    sum_get_data_time = timedelta()
     for code in code_list:
+        get_data_start = datetime.now()
         coin_data = data_settings_with_fdr(code, '2019')
+        get_data_time = datetime.now() - get_data_start
+        sum_get_data_time += get_data_time
 
         if coin_data is not False:
             # 해당 종목 시뮬
@@ -228,3 +231,4 @@ if __name__ == "__main__":
     total_rate = sum_rate / len(code_list)
     print(f"총 수익: {total_profit}\n수익률: {total_rate}")
     print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+    print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
