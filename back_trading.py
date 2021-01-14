@@ -5,7 +5,7 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from code_list import codes
+from code_list import stock_codes
 
 
 class TestStrategy(bt.Strategy):
@@ -181,7 +181,7 @@ def simul():
 
 if __name__ == "__main__":
     # 주식 종목 코드 리스트
-    code_list = codes
+    code_list = stock_codes
     total_profit, sum_rate = 0, 0
     '''
     먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
