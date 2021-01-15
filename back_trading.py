@@ -5,7 +5,7 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from code_list import stock_codes
+from data.code_list import stock_codes
 
 
 class TestStrategy(bt.Strategy):
@@ -213,8 +213,11 @@ if __name__ == "__main__":
     simul_start = datetime.now()
     print(f"시뮬 시작: {simul_start}")
     sum_get_data_time = timedelta()
+
     for code in code_list:
+        print(f"종목 코드: {code}")
         get_data_start = datetime.now()
+        # 종목별 데이터
         coin_data = data_settings_with_fdr(code, '2019')
         get_data_time = datetime.now() - get_data_start
         sum_get_data_time += get_data_time
@@ -222,9 +225,10 @@ if __name__ == "__main__":
         if coin_data is not False:
             # 해당 종목 시뮬
             profit, rate = simulator()
+            # 손익 계산
             total_profit += profit
             sum_rate += rate
-            print(f"현재까지의 수익: {total_profit}")
+            print(f"현재까지의 수익: {total_profit}\n")
         else:
             print('데이터에 결측치가 존재합니다.')
 
