@@ -37,7 +37,7 @@ def draw_candle_with_indicator(df, code):
 
     fig.update_layout(title=code, legend_title="Labels")
 
-    fig.show()
+    return fig
 
 
 def draw_candle(df, code):
@@ -61,4 +61,5 @@ def draw_candle(df, code):
     #         showarrow=False, xanchor='left', text='Increase Period Begins')]
     # )
 
-    fig.show()
+    return fig
+

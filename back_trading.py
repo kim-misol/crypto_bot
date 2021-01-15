@@ -1,4 +1,6 @@
+import os
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import FinanceDataReader as fdr
 import backtrader as bt
@@ -186,6 +188,21 @@ def simulator():
     return profit, rate
 
 
+def draw_graph(coin_data, code):
+    # $ 그래프 그리기
+    # draw_candle(coin_data, code)
+    fig = draw_candle_with_indicator(coin_data, code)
+    today = str(datetime.today())[:10].replace('-', '')
+    fcode = code.replace('/', '-')
+    if not os.path.exists("images"):
+        os.mkdir("images")
+    if not os.path.exists(f"images/{today}"):
+        os.mkdir(f"images/{today}")
+
+    fig.write_image(f"images/{today}/{fcode}.png")
+    fig.write_html(f"images/{today}/{fcode}.html")
+
+
 if __name__ == "__main__":
     # 주식 종목 코드 리스트 가져오기
     # $ 코드 리스트
@@ -221,9 +238,7 @@ if __name__ == "__main__":
             total_profit += profit
             sum_rate += rate
             print(f"현재까지의 수익: {total_profit}\n")
-            # $ 그래프 그리기
-            # draw_candle(coin_data, code)
-            draw_candle_with_indicator(coin_data, code)
+            draw_graph(coin_data, code)
         else:
             print('데이터에 결측치가 존재합니다.')
 
@@ -231,7 +246,3 @@ if __name__ == "__main__":
     print(f"총 수익: {total_profit}\n수익률: {total_rate}")
     # print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
     # print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
-
-    # is_draw = input(f"차트 그리기 y/n: ")
-    # if is_draw == 'y':
-    #     draw_candle(coin_data, code)
