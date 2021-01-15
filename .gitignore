@@ -141,6 +141,6 @@ dmypy.json
 cython_debug/
 
 # Add
-info/
+#info/
 .idea/
 Database/
