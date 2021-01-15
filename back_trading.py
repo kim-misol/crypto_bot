@@ -5,7 +5,8 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from data.code_list import stock_codes
+from draw_graph import draw_candle
+from data.code_list import stock_codes, coin_codes
 
 
 class TestStrategy(bt.Strategy):
@@ -93,7 +94,8 @@ class TestStrategy(bt.Strategy):
                     print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
                 # 매도 조건
                 elif self.meanPrice * 1.1 < self.close[0] and self.numberOfStocks != 0:
-                    print(f"{self.datas[0].datetime.date(0)} - SELL : {self.close[0]}, sell amount : {self.numberOfStocks}")
+                    print(
+                        f"{self.datas[0].datetime.date(0)} - SELL : {self.close[0]}, sell amount : {self.numberOfStocks}")
                     self.order = self.sell(size=self.numberOfStocks)
             # 5 20 골든크로스 데드크로스
             elif self.simul_num == 2:
@@ -122,8 +124,10 @@ def data_settings(code, start=datetime(2020, 1, 1), end=datetime.today()):
     if invalid_data_cnt == 0:
         price_df['Date'] = price_df.index
         price_df['Open'] = price_df.iloc[:]['Open'].astype(np.float64)
+        price_df['High'] = price_df.iloc[:]['High'].astype(np.float64)
+        price_df['Low'] = price_df.iloc[:]['Low'].astype(np.float64)
         price_df['Close'] = price_df.iloc[:]['Close'].astype(np.float64)
-        df = price_df.loc[:, ['Date', 'Open', 'Close']].copy()
+        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close']].copy()
         return df
     return False
 
@@ -181,8 +185,10 @@ def simulator():
 
 
 if __name__ == "__main__":
-    # 주식 종목 코드 리스트
-    code_list = stock_codes
+    # 주식 종목 코드 리스트 가져오기
+    # $ 코드 리스트
+    # code_list = stock_codes[:2]
+    code_list = coin_codes
     total_profit, sum_rate = 0, 0
     '''
     먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
@@ -193,17 +199,18 @@ if __name__ == "__main__":
     #                            datetime.today())[['Open', 'Close']]
     # coin_data = data_settings_with_fdr('005930', start=datetime(2019, 1, 1))
 
-    simul_start = datetime.now()
-    print(f"시뮬 시작: {simul_start}")
-    sum_get_data_time = timedelta()
+    # simul_start = datetime.now()
+    # print(f"시뮬 시작: {simul_start}")
+    # sum_get_data_time = timedelta()
 
     for code in code_list:
         print(f"종목 코드: {code}")
         get_data_start = datetime.now()
         # 종목별 데이터
+        # $ 백테스팅 시작 날짜 설정
         coin_data = data_settings(code=code, start=datetime(2019, 1, 1))
-        get_data_time = datetime.now() - get_data_start
-        sum_get_data_time += get_data_time
+        # get_data_time = datetime.now() - get_data_start
+        # sum_get_data_time += get_data_time
 
         if coin_data is not False:
             # 해당 종목 시뮬
@@ -212,10 +219,15 @@ if __name__ == "__main__":
             total_profit += profit
             sum_rate += rate
             print(f"현재까지의 수익: {total_profit}\n")
+            draw_candle(coin_data, code)
         else:
             print('데이터에 결측치가 존재합니다.')
 
     total_rate = sum_rate / len(code_list)
     print(f"총 수익: {total_profit}\n수익률: {total_rate}")
-    print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
-    print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
+    # print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+    # print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
+
+    # is_draw = input(f"차트 그리기 y/n: ")
+    # if is_draw == 'y':
+    #     draw_candle(coin_data, code)
