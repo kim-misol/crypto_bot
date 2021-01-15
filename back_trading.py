@@ -5,8 +5,9 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from draw_graph import draw_candle
+from draw_graph import draw_candle, draw_candle_with_indicator
 from data.code_list import stock_codes, coin_codes
+from trading_indicators import bollinger_band
 
 
 class TestStrategy(bt.Strategy):
@@ -127,7 +128,8 @@ def data_settings(code, start=datetime(2020, 1, 1), end=datetime.today()):
         price_df['High'] = price_df.iloc[:]['High'].astype(np.float64)
         price_df['Low'] = price_df.iloc[:]['Low'].astype(np.float64)
         price_df['Close'] = price_df.iloc[:]['Close'].astype(np.float64)
-        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close']].copy()
+        price_df = bollinger_band(price_df)
+        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'ubb', 'mbb', 'lbb']].copy()
         return df
     return False
 
@@ -219,7 +221,9 @@ if __name__ == "__main__":
             total_profit += profit
             sum_rate += rate
             print(f"현재까지의 수익: {total_profit}\n")
-            draw_candle(coin_data, code)
+            # $ 그래프 그리기
+            # draw_candle(coin_data, code)
+            draw_candle_with_indicator(coin_data, code)
         else:
             print('데이터에 결측치가 존재합니다.')
 
