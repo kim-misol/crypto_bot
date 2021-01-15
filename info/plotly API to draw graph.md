@@ -13,3 +13,6 @@ interactive한 시각화가 가능하다는 게 큰 장점이다.
 pip install plotly
 ```
 
+# Examples
+
+![캔들차트](https://kimmisol.com/wp-content/uploads/2021/01/plotly-라이브러리-캔들차트-.png)
