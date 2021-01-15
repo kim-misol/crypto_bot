@@ -113,22 +113,9 @@ class TestStrategy(bt.Strategy):
             self.pastMA20 = MA20
 
 
-def data_settings(code, start=datetime(2018, 1, 1), end=datetime.today()):
-    # 야후에서 데이터 가져오기
-    price_df = pdr.get_data_yahoo(code, start=start, end=end)[['Open', 'Close']]
-    # 결측치 존재 유무 확인
-    invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
-
-    if invalid_data_cnt == 0:
-        price_df['Date'] = price_df.index
-        df = price_df.loc[:, ['Date', 'Open', 'Close']].copy()
-        return df
-    return False
-
-
-def data_settings_with_fdr(code, year_start):
+def data_settings(code, start=datetime(2020, 1, 1), end=datetime.today()):
     # 비트코인 원화 가격 (빗썸) 2016년~현재
-    price_df = fdr.DataReader(code, year_start)
+    price_df = fdr.DataReader(code, start=start, end=end)
     # 결측치 존재 유무 확인
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
@@ -204,11 +191,7 @@ if __name__ == "__main__":
     # coin_data = pdr.DataReader('005930.KS', 'yahoo',
     #                            datetime(2016, 6, 1),
     #                            datetime.today())[['Open', 'Close']]
-    # 데이터 가공
-    # coin_data = data_settings('BTC-USD',
-    #                                start=datetime(2018, 1, 1),
-    #                                end=datetime.today())
-    # coin_data = data_settings_with_fdr('005930', '2018')
+    # coin_data = data_settings_with_fdr('005930', start=datetime(2019, 1, 1))
 
     simul_start = datetime.now()
     print(f"시뮬 시작: {simul_start}")
@@ -218,7 +201,7 @@ if __name__ == "__main__":
         print(f"종목 코드: {code}")
         get_data_start = datetime.now()
         # 종목별 데이터
-        coin_data = data_settings_with_fdr(code, '2019')
+        coin_data = data_settings(code=code, start=datetime(2019, 1, 1))
         get_data_time = datetime.now() - get_data_start
         sum_get_data_time += get_data_time
 
