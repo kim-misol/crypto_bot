@@ -8,3 +8,4 @@ matplotlib
 backtrader
 pandas_datareader
 trading_calendars
+plotly
