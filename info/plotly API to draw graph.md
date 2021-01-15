@@ -13,6 +13,13 @@ interactive한 시각화가 가능하다는 게 큰 장점이다.
 pip install plotly
 ```
 
+# Documentation
+- [캔들 차트](https://plotly.com/python/candlestick-charts/)
+- [캔들+보조지표 차트](https://plotly.com/python/graphing-multiple-chart-types/)
+- [차트를 이미지로 추출](https://plotly.com/python/static-image-export/)
+- [차트를 HTML로 추출](https://plotly.com/python/interactive-html-export/)
+
+
 # Examples
 
 ![캔들차트](https://kimmisol.com/wp-content/uploads/2021/01/plotly-라이브러리-캔들차트-.png)
