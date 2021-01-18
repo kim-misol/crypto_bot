@@ -178,7 +178,7 @@ def simulator():
 
     # 백테스팅 종료 후 cerebro.broker.getvalue()를 실행시키면 알고리즘 시뮬 결과 출력
     profit = round(cerebro.broker.getvalue() - deposit, 2)
-    rate = round(cerebro.broker.getvalue() / deposit * 100, 2) - 100
+    rate = round(cerebro.broker.getvalue() / deposit * 100, 2)
     backtesting_result = f"""
     Final portfolio value : {round(cerebro.broker.getvalue(), 2)}
     Total Profit: {profit}
@@ -204,23 +204,11 @@ def draw_graph(coin_data, code):
 
 
 if __name__ == "__main__":
-    # 주식 종목 코드 리스트 가져오기
+    # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
     # $ 코드 리스트
     # code_list = stock_codes[:2]
     code_list = coin_codes
     total_profit, sum_rate = 0, 0
-    '''
-    먼저 coin_data 에는 pandas_datareader를 사용해 yahoo에서 pandas DataFrame 형식의 주가 리스트를 받아온다. 
-    이 중 위 코드에서는 Open과 Close 두 가지 열만 선택
-    '''
-    # coin_data = pdr.DataReader('005930.KS', 'yahoo',
-    #                            datetime(2016, 6, 1),
-    #                            datetime.today())[['Open', 'Close']]
-    # coin_data = data_settings_with_fdr('005930', start=datetime(2019, 1, 1))
-
-    # simul_start = datetime.now()
-    # print(f"시뮬 시작: {simul_start}")
-    # sum_get_data_time = timedelta()
 
     for code in code_list:
         print(f"종목 코드: {code}")
