@@ -1,6 +1,44 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import Input, Dense, LSTM, Activation, BatchNormalization, Dropout
+from tensorflow.keras import backend as K, regularizers
+
+
+def create_dataset_binary(data, feature_lsit, step, n):
+    # LSTM 모델에 넣을 변수 데이터 선택
+    train_xdata = np.array(data[feature_lsit[:n]])
+    # 마지막 단계
+    m = np.arange(len(train_xdata) - step)
+    x, y = [], []
+    for i in m:
+        # 각 단계마다 사용할 학습 데이터 기간 정의 (step = 얼마만큼의 데이터 기간을 입력값으로 전달할지)
+        a = train_xdata[i:(i + step)]
+        x.append(a)
+    # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
+    x_batch = np.reshape(np.array(x), (len(m), step, n))
+
+    # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
+    train_ydata = np.array(data[feature_lsit[n-4]])     # Close_normal 값
+    # n_step 이상부터 답을 사용
+    for i in m + step:
+        # 이진 분류를 하기 위한 시작 종가
+        start_price = train_ydata[i - 1]
+        # 이진 분류르 하기 위한 종료 종가
+        end_price = train_ydata[i]
+
+        # 이진 분류: 종료 종가가 더 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
+        if end_price > start_price:
+            label = 1  # 오르면 1
+        else:
+            label = 0  # 떨어지면 0
+        # 임시로 생성된 레이블을 순차적으로 저장
+        y.append(label)
+    # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
+    y_batch = np.reshape(np.array(y), (-1, 1))
+    # x_batch.shape: (662, 5, 7), y_batch.shape: (662, 1)
+    return x_batch, y_batch
 
 
 def min_max_normal(tmp_df):

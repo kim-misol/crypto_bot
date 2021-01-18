@@ -10,7 +10,7 @@ import pandas_datareader as pdr
 from graphs import draw_candle, draw_candle_with_indicator
 from data.code_list import stock_codes, coin_codes
 from trading_indicators import bollinger_band
-from ai import data_split, min_max_normal
+from ai import data_split, min_max_normal, create_dataset_binary
 
 
 class TestStrategy(bt.Strategy):
@@ -205,6 +205,27 @@ def save_graph(coin_df, code):
     fig.write_html(f"images/{today}/{fcode}.html")
 
 
+def ai_filter(coin_df):
+    # 학습, 검증, 테스트 데이터 기간 분할
+    train_df, val_df, test_df = data_split(coin_df)
+    # 최소-최대 정규화
+    train_sample_df, eng_list = min_max_normal(train_df)
+    val_sample_df, eng_list = min_max_normal(val_df)
+    test_sample_df, eng_list = min_max_normal(test_df)
+    # 레이블링 테이터
+    # (num_step)일치 (n_feature)개 변수의 데이터를 사용해 다음날 종가 예측
+    num_step = 5
+    num_unit = 200
+    n_feature = len(eng_list) - 1
+
+    # 훈련, 검증, 테스트 데이터를 변수 데이터와 레이블 데이터로 나눈다
+    x_train, y_train = create_dataset_binary(train_sample_df, eng_list, num_step, n_feature)
+    x_val, y_val = create_dataset_binary(val_sample_df, eng_list, num_step, n_feature)
+    x_test, y_test = create_dataset_binary(test_sample_df, eng_list, num_step, n_feature)
+    # x_train.shape
+    # y_train.shape
+
+
 if __name__ == "__main__":
     # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
     # $ 코드 리스트
@@ -213,7 +234,7 @@ if __name__ == "__main__":
     total_profit, sum_rate = 0, 0
     use_graph = True if input(f"그래프 저장 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
     use_ai = True if input(f"AI 학습 사용 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
-    if use_graph not in ('N', 'n', 0, 'ㅜ') or use_ai not in ('N', 'n', 0, 'ㅜ'):
+    if use_graph not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ') or use_ai not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ'):
         print('y 또는 n을 입력해주세요.')
         exit(1)
 
@@ -229,12 +250,8 @@ if __name__ == "__main__":
         if coin_df is not False:
             # ai 학습을 활용할 경우
             if use_ai:
-                # 학습, 검증, 테스트 데이터 기간 분할
-                train_df, val_df, test_df = data_split(coin_df)
-                # 최소-최대 정규화
-                train_sample_df, eng_list = min_max_normal(train_df)
-                val_sample_df, eng_list = min_max_normal(val_df)
-                test_sample_df, eng_list = min_max_normal(test_df)
+                ai_filter(coin_df)
+
             # 해당 종목 시뮬
             profit, rate = simulator()
             # 손익 계산
