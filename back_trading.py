@@ -7,9 +7,10 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from draw_graph import draw_candle, draw_candle_with_indicator
+from graphs import draw_candle, draw_candle_with_indicator
 from data.code_list import stock_codes, coin_codes
 from trading_indicators import bollinger_band
+from ai import data_split, min_max_normal
 
 
 class TestStrategy(bt.Strategy):
@@ -130,8 +131,9 @@ def data_settings(code, start=datetime(2020, 1, 1), end=datetime.today()):
         price_df['High'] = price_df.iloc[:]['High'].astype(np.float64)
         price_df['Low'] = price_df.iloc[:]['Low'].astype(np.float64)
         price_df['Close'] = price_df.iloc[:]['Close'].astype(np.float64)
+        price_df['Volume'] = price_df.iloc[:]['Volume']
         price_df = bollinger_band(price_df)
-        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'ubb', 'mbb', 'lbb']].copy()
+        df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb']].copy()
         return df
     return False
 
@@ -167,7 +169,7 @@ def simulator():
     open값은 꼭 전달하도록 한다.
     이렇게 데이터 생성이 끝나면, adddata()를 통해 데이터를 투입해준다.
     '''
-    dataset = bt.feeds.PandasData(dataname=coin_data, open='Open', close='Close')
+    dataset = bt.feeds.PandasData(dataname=coin_df, open='Open', close='Close')
     cerebro.adddata(dataset)
 
     # 백테스팅 전 초기 자금 출력
@@ -188,10 +190,10 @@ def simulator():
     return profit, rate
 
 
-def draw_graph(coin_data, code):
+def save_graph(coin_df, code):
     # $ 그래프 그리기
-    # draw_candle(coin_data, code)
-    fig = draw_candle_with_indicator(coin_data, code)
+    # draw_candle(coin_df, code)
+    fig = draw_candle_with_indicator(coin_df, code)
     today = str(datetime.today())[:10].replace('-', '')
     fcode = code.replace('/', '-')
     if not os.path.exists("images"):
@@ -209,24 +211,38 @@ if __name__ == "__main__":
     # code_list = stock_codes[:2]
     code_list = coin_codes
     total_profit, sum_rate = 0, 0
+    use_graph = True if input(f"그래프 저장 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    use_ai = True if input(f"AI 학습 사용 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    if use_graph not in ('N', 'n', 0, 'ㅜ') or use_ai not in ('N', 'n', 0, 'ㅜ'):
+        print('y 또는 n을 입력해주세요.')
+        exit(1)
 
     for code in code_list:
         print(f"종목 코드: {code}")
         get_data_start = datetime.now()
         # 종목별 데이터
         # $ 백테스팅 시작 날짜 설정
-        coin_data = data_settings(code=code, start=datetime(2019, 1, 1))
+        coin_df = data_settings(code=code, start=datetime(2018, 1, 1))
         # get_data_time = datetime.now() - get_data_start
         # sum_get_data_time += get_data_time
 
-        if coin_data is not False:
+        if coin_df is not False:
+            # ai 학습을 활용할 경우
+            if use_ai:
+                # 학습, 검증, 테스트 데이터 기간 분할
+                train_df, val_df, test_df = data_split(coin_df)
+                # 최소-최대 정규화
+                train_sample_df, eng_list = min_max_normal(train_df)
+                val_sample_df, eng_list = min_max_normal(val_df)
+                test_sample_df, eng_list = min_max_normal(test_df)
             # 해당 종목 시뮬
             profit, rate = simulator()
             # 손익 계산
             total_profit += profit
             sum_rate += rate
             print(f"현재까지의 수익: {total_profit}\n")
-            draw_graph(coin_data, code)
+            if use_graph:
+                save_graph(coin_df, code)
         else:
             print('데이터에 결측치가 존재합니다.')
 

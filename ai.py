@@ -1,5 +1,31 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+
+
+def min_max_normal(tmp_df):
+    eng_list = []
+    sample_df = tmp_df.copy()
+    all_features = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
+    for x in all_features:
+        if x in ('Date', 'next_rtn'):
+            continue
+        series = sample_df[x].copy()
+        values = series.values
+        values = values.reshape((len(values), 1))
+        # 스케일러생성 및 훈련
+        # sklearn 라이브러리에서 정규화 객체를 받는다.
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        # 입력 데이터에 대해 정규화 범위를 탐색
+        scaler = scaler.fit(values)
+        # 데이터셋 정규화 및 출력
+        # 입력데이터를 최소-최대 정규화
+        normalized = scaler.transform(values)
+        # 정규화된 데이터를 새로운 컬럼명으로 저장
+        new_feature = f'{x}_normal'
+        eng_list.append(new_feature)
+        sample_df[new_feature] = normalized
+    return sample_df, eng_list
 
 
 def data_split(df):
