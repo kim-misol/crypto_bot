@@ -11,3 +11,4 @@ trading_calendars
 plotly
 kaleido
 sklearn
+tensorflow

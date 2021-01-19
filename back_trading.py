@@ -10,7 +10,7 @@ import pandas_datareader as pdr
 from graphs import draw_candle, draw_candle_with_indicator
 from data.code_list import stock_codes, coin_codes
 from trading_indicators import bollinger_band
-from ai import data_split, min_max_normal, create_dataset_binary
+from ai import data_split, min_max_normal, create_dataset_binary, create_model
 
 
 class TestStrategy(bt.Strategy):
@@ -196,6 +196,7 @@ def save_graph(coin_df, code):
     fig = draw_candle_with_indicator(coin_df, code)
     today = str(datetime.today())[:10].replace('-', '')
     fcode = code.replace('/', '-')
+
     if not os.path.exists("images"):
         os.mkdir("images")
     if not os.path.exists(f"images/{today}"):
@@ -222,8 +223,10 @@ def ai_filter(coin_df):
     x_train, y_train = create_dataset_binary(train_sample_df, eng_list, num_step, n_feature)
     x_val, y_val = create_dataset_binary(val_sample_df, eng_list, num_step, n_feature)
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, num_step, n_feature)
-    # x_train.shape
-    # y_train.shape
+
+    # model 생성
+    model = create_model(x_train, num_unit)
+#     ? 모델 저장하여 재사용 가능한지 확인
 
 
 if __name__ == "__main__":
