@@ -7,7 +7,7 @@ import backtrader as bt
 import numpy as np
 import pandas_datareader as pdr
 
-from graphs import draw_candle, draw_candle_with_indicator
+from graphs import draw_candle, draw_candle_with_indicator, plot_model_fit_history
 from data.code_list import stock_codes, coin_codes
 from trading_indicators import bollinger_band
 from ai import data_split, min_max_normal, create_dataset_binary, create_model
@@ -226,7 +226,22 @@ def ai_filter(coin_df):
 
     # model 생성
     model = create_model(x_train, num_unit)
-#     ? 모델 저장하여 재사용 가능한지 확인
+    #     ? 모델 저장하여 재사용 가능한지 확인
+    # model 학습. 휸련데이터샛을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
+    # validation_data를 총해 에폭이 끝날 때마다 학습 모델을 해당 데이터로 평가한다. 해당 데이터로 학습하지는 않는다.
+    EPOCHS = 20
+    BATCH_SIZE = 10
+    VERBOSE = 1
+    history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE, verbose=VERBOSE,
+                        validation_data=(x_val, y_val))
+    # fig = plot_model_fit_history(history, EPOCHS)
+    # fig.show()
+    # 예측 값 출력
+    predicted = model.predict(x_test)
+    y_pred = np.argmax(predicted, axis=1)
+    Y_test = np.argmax(y_test, axis=1)
+    # cm = confusion_matrix(Y_test, y_pred)
+    # report = classification_report(Y_test, y_pred)
 
 
 if __name__ == "__main__":
@@ -235,8 +250,10 @@ if __name__ == "__main__":
     # code_list = stock_codes[:2]
     code_list = coin_codes
     total_profit, sum_rate = 0, 0
-    use_graph = True if input(f"그래프 저장 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
-    use_ai = True if input(f"AI 학습 사용 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    # use_ai = True if input(f"AI 학습 사용 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    use_graph = False
+    use_ai = True
     if use_graph not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ') or use_ai not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ'):
         print('y 또는 n을 입력해주세요.')
         exit(1)
