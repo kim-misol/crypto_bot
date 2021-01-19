@@ -31,9 +31,16 @@ def create_model(x_train, num_unit):
 
     layer_lstm5 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm4)
     layer_lstm5 = BatchNormalization()(layer_lstm5)
-    # 완전 연결층으로 연결되면서 최종 예측값을 출력
-    # sigmoid: 입력 값을 0과 1 사이의 값으로 변환하여 출력. 레이어가 깊어질 수록 그라이언트가 전달되지 않는 vanishing gradient 문제가 발생 (학습이 안되는 상황)
-    # dense 첫번째 인자: units = 출력 뉴런의 수
+    # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
+    '''
+    Dense 첫번째 인자 = units = 출력 뉴런의 수.
+    input_dim = 입력 뉴런의 수. (입력의 차원)
+    activation = 활성화 함수.
+    - linear  : 디폴트 값으로 별도 활성화 함수 없이 입력 뉴런과 가중치의 계산 결과 그대로 출력. Ex) 선형 회귀
+    - sigmoid : 이진 분류 문제에서 출력층에 주로 사용되는 활성화 함수. 레이어가 깊어질 수록 그라이언트가 전달되지 않는 vanishing gradient 문제가 발생 (학습이 안되는 상황)
+    - softmax : 셋 이상을 분류하는 다중 클래스 분류 문제에서 출력층에 주로 사용되는 활성화 함수.
+    - relu : 은닉층에 주로 사용되는 활성화 함수.
+    '''
     output_layer = Dense(1, activation='sigmoid')(layer_lstm5)
     # output_layer = Dense(1, activation='softmax')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
     # RNN, LSTM 등을 학습시킬 때 사용
