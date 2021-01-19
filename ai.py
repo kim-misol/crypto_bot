@@ -12,7 +12,7 @@ def create_model(x_train, num_unit):
     # 입력데이터셋 형태에 맞게 지정
     # 케라스에서 첫번째 차원에는 데이터의 개수가 들어가는데, 임의의 스칼라를 의미하는 None 값을 넣어준다
     # 두번째 차원에는 데이터의 시간축(time_step), 세번째는 LSTM 입력층에 입력되는 특성 데이터 (feature) 개수
-    input_layer = Input(bathch_shape=(None, x_train.shape[1], x_train.shape[2]))
+    input_layer = Input(batch_shape=(None, x_train.shape[1], x_train.shape[2]))
     # 다층 구조로 LSTM 층 위에 LSTM 층이 연결: LSTM(input)(input_layer)
     # return_sequences=True 이전 layer의 출력이 다음 layer의 입력으로 전달
     layer_lstm1 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
@@ -33,12 +33,13 @@ def create_model(x_train, num_unit):
     layer_lstm5 = BatchNormalization()(layer_lstm5)
     # 완전 연결층으로 연결되면서 최종 예측값을 출력
     # sigmoid: 입력 값을 0과 1 사이의 값으로 변환하여 출력. 레이어가 깊어질 수록 그라이언트가 전달되지 않는 vanishing gradient 문제가 발생 (학습이 안되는 상황)
-    output_layer = Dense(2, activation='sigmoid')(layer_lstm5)
-    # output_layer = Dense(2, activation='softmax')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
+    # dense 첫번째 인자: units = 출력 뉴런의 수
+    output_layer = Dense(1, activation='sigmoid')(layer_lstm5)
+    # output_layer = Dense(1, activation='softmax')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
     # RNN, LSTM 등을 학습시킬 때 사용
-    # output_layer = Dense(2, activation='tanh')(layer_lstm5)
+    # output_layer = Dense(1, activation='tanh')(layer_lstm5)
     # CNN을 학습시킬 때 많이 사용, 0 이하의 값은 다음 레이어에 전달하지 않는다. 계산식 매우 간단함으로써 연산 속도가 빨라질 수 있고, 구현하기 편하다
-    # output_layer = Dense(2, activation='relu')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
+    # output_layer = Dense(1, activation='relu')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
 
     # 입력층과 출력층을 연결해 모델 객체를 만들어낸다.
     model = Model(input_layer, output_layer)
@@ -51,9 +52,9 @@ def create_model(x_train, num_unit):
     return model
 
 
-def create_dataset_binary(data, feature_lsit, step, n):
+def create_dataset_binary(data, feature_list, step, n):
     # LSTM 모델에 넣을 변수 데이터 선택
-    train_xdata = np.array(data[feature_lsit[:n]])
+    train_xdata = np.array(data[feature_list[:n]])
     # 마지막 단계
     m = np.arange(len(train_xdata) - step)
     x, y = [], []
@@ -65,7 +66,7 @@ def create_dataset_binary(data, feature_lsit, step, n):
     x_batch = np.reshape(np.array(x), (len(m), step, n))
 
     # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
-    train_ydata = np.array(data[feature_lsit[n - 4]])  # Close_normal 값
+    train_ydata = np.array(data[feature_list[n - 4]])  # Close_normal 값
     # n_step 이상부터 답을 사용
     for i in m + step:
         # 이진 분류를 하기 위한 시작 종가
