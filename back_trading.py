@@ -207,9 +207,10 @@ def save_graph(coin_df, code):
 
 
 def ai_filter(coin_df):
-    # 학습, 검증, 테스트 데이터 기간 분할
+    # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
     train_df, val_df, test_df = data_split(coin_df)
     # 최소-최대 정규화
+    # ? nan 값이 있는 경우 어떻게 학습?
     train_sample_df, eng_list = min_max_normal(train_df)
     val_sample_df, eng_list = min_max_normal(val_df)
     test_sample_df, eng_list = min_max_normal(test_df)
@@ -217,16 +218,21 @@ def ai_filter(coin_df):
     # (num_step)일치 (n_feature)개 변수의 데이터를 사용해 다음날 종가 예측
     num_step = 5
     num_unit = 200
-    n_feature = len(eng_list) - 1
+    # ? 1을 왜 빼지?
+    # n_feature = len(eng_list) - 1
+    n_feature = len(eng_list)
 
     # 훈련, 검증, 테스트 데이터를 변수 데이터와 레이블 데이터로 나눈다
     x_train, y_train = create_dataset_binary(train_sample_df, eng_list, num_step, n_feature)
+    # 20일 이동평균값 이용시 nan 값이 들어가서. nan 값 있는 데이터 삭제 필요, nan 값 빼니까 model.fit 할 때 loss도 정상 출력
+    x_train = x_train[19:]
+    y_train = y_train[19:]
     x_val, y_val = create_dataset_binary(val_sample_df, eng_list, num_step, n_feature)
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, num_step, n_feature)
 
     # model 생성
     model = create_model(x_train, num_unit)
-    #     ? 모델 저장하여 재사용 가능한지 확인
+    # ? 모델 저장하여 재사용 가능한지 확인
     # model 학습. 휸련데이터샛을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
     # validation_data를 총해 에폭이 끝날 때마다 학습 모델을 해당 데이터로 평가한다. 해당 데이터로 학습하지는 않는다.
     EPOCHS = 20
