@@ -1,8 +1,20 @@
 import plotly.graph_objects as go
 
-# import pandas as pd
-from datetime import datetime
-import FinanceDataReader as fdr
+
+def plot_history(history, x):
+    fig = go.Figure()
+
+    for item in history.history.items():
+        y_label = item[0]
+        y_value = item[1]
+        fig.add_trace(
+            go.Scatter(
+                x=list(range(x)),
+                y=y_value,
+                name=y_label
+            ))
+
+    return fig
 
 
 def draw_candle_with_indicator(df, code):
@@ -62,4 +74,3 @@ def draw_candle(df, code):
     # )
 
     return fig
-
