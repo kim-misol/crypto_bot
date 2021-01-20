@@ -61,7 +61,7 @@ def create_model(x_train, num_unit):
 
 def create_dataset_binary(data, feature_list, step, n):
     # LSTM 모델에 넣을 변수 데이터 선택
-    train_xdata = np.array(data[feature_list[:n]])
+    train_xdata = np.array(data[feature_list[:n]])  # 최소-최대 정규화된 데이터만 가져오기
     # 마지막 단계
     m = np.arange(len(train_xdata) - step)
     x, y = [], []
@@ -70,7 +70,7 @@ def create_dataset_binary(data, feature_list, step, n):
         a = train_xdata[i:(i + step)]
         x.append(a)
     # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
-    x_batch = np.reshape(np.array(x), (len(m), step, n))
+    x_batch = np.reshape(np.array(x), (len(m), step, n))    # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
 
     # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
     train_ydata = np.array(data[feature_list[n - 5]])  # Close_normal 값
@@ -90,7 +90,7 @@ def create_dataset_binary(data, feature_list, step, n):
         y.append(label)
     # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
     y_batch = np.reshape(np.array(y), (-1, 1))
-    # x_batch.shape: (662, 5, 7), y_batch.shape: (662, 1)
+    # x_batch.shape: (662, 5, 8), y_batch.shape: (662, 1)
     return x_batch, y_batch
 
 
