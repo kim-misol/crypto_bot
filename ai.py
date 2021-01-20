@@ -73,7 +73,7 @@ def create_dataset_binary(data, feature_list, step, n):
     x_batch = np.reshape(np.array(x), (len(m), step, n))
 
     # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
-    train_ydata = np.array(data[feature_list[n - 4]])  # Close_normal 값
+    train_ydata = np.array(data[feature_list[n - 5]])  # Close_normal 값
     # n_step 이상부터 답을 사용
     for i in m + step:
         # 이진 분류를 하기 위한 시작 종가
