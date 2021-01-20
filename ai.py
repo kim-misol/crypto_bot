@@ -70,10 +70,11 @@ def create_dataset_binary(data, feature_list, step, n):
         a = train_xdata[i:(i + step)]
         x.append(a)
     # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
-    x_batch = np.reshape(np.array(x), (len(m), step, n))    # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
+    x_batch = np.reshape(np.array(x), (len(m), step, n))  # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
 
     # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
-    train_ydata = np.array(data[feature_list[n - 5]])  # Close_normal 값
+    # train_ydata = np.array(data[feature_list[n - 5]])  # Close_normal 값
+    train_ydata = np.array(data[feature_list[n]])  # ? github code, 이건 next_rtn 아닌가
     # n_step 이상부터 답을 사용
     for i in m + step:
         # 이진 분류를 하기 위한 시작 종가

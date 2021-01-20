@@ -5,12 +5,13 @@ from pathlib import Path
 import FinanceDataReader as fdr
 import backtrader as bt
 import numpy as np
+from pandas import DataFrame
 import pandas_datareader as pdr
 
 from graphs import draw_candle, draw_candle_with_indicator, plot_model_fit_history
 from data.code_list import stock_codes, coin_codes
 from trading_indicators import bollinger_band
-from ai import data_split, min_max_normal, create_dataset_binary, create_model
+from ai import data_split, min_max_normal, create_dataset_binary, create_model, predict
 
 
 class TestStrategy(bt.Strategy):
@@ -208,6 +209,8 @@ def save_graph(coin_df, code):
 
 def ai_filter(coin_df):
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
+    # df['next_price'] = df['Adj Close'].shift(-1)
+    coin_df['next_rtn'] = coin_df['Close'] / coin_df['Open'] - 1
     train_df, val_df, test_df = data_split(coin_df)
     # 최소-최대 정규화
     train_sample_df, eng_list = min_max_normal(train_df)
@@ -220,12 +223,18 @@ def ai_filter(coin_df):
     # (num_step)일치 (n_feature)개 변수의 데이터를 사용해 다음날 종가 예측
     num_step = 5
     num_unit = 200
-    n_feature = len(eng_list)
+    eng_list = eng_list + ['next_rtn']
+    n_feature = len(eng_list) - 1
 
     # 훈련, 검증, 테스트 데이터를 변수 데이터와 레이블 데이터로 나눈다
     x_train, y_train = create_dataset_binary(train_sample_df, eng_list, num_step, n_feature)
     x_val, y_val = create_dataset_binary(val_sample_df, eng_list, num_step, n_feature)
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, num_step, n_feature)
+    # ?뭐지.. github 찾아보니 책에는 생략되어있던 코드, 어쩐지 Dense(2)로 넣으면 shape이 달라서 에러가 나더라.
+    from tensorflow.keras.utils import to_categorical
+    y_train = to_categorical(y_train, 2)
+    y_val = to_categorical(y_val, 2)
+    y_test = to_categorical(y_test, 2)
 
     # model 생성
     model = create_model(x_train, num_unit)
