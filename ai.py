@@ -1,9 +1,37 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import classification_report, confusion_matrix
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Input, Dense, LSTM, Activation, BatchNormalization, Dropout
 from tensorflow.keras import backend as K, regularizers
+from tensorflow.keras.metrics import CategoricalAccuracy, BinaryAccuracy
+
+
+def predict(x_test, y_test, model):
+    # 스케일 된 예측값을 계산 (0과 1사이의 값)
+    predicted = model.predict(x_test, verbose=1)
+    y_pred = np.argmax(predicted, axis=1)
+    Y_test = np.argmax(y_test, axis=1)
+    cm = confusion_matrix(Y_test, y_pred)
+    report = classification_report(Y_test, y_pred)
+    print(report)
+
+
+'''
+x_test.shape
+(218, 5, 8)
+predicted.shape
+(218, 5, 1)
+y_pred.shape
+(218, 1)
+y_test.shape
+(218, 1)
+? predicted와 y_test의 shape이 다르다..
+
+if x_test[4][0][3] < x_test[5][0][3]
+y_test[4] = 1
+'''
 
 
 def create_model(x_train, num_unit):
@@ -55,7 +83,8 @@ def create_model(x_train, num_unit):
     # binary_crossentropy - sigmoid, categorical_crossentropy - softmax 이 조합으로 사용된다.
     # 레이블 클래스가 두 개 뿐인 경우 (0과 1로 가정)이 교차 엔트로피 손실을 사용
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # Debug model.summary()
+    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[BinaryAccuracy()])
+    print(model.summary())
     return model
 
 

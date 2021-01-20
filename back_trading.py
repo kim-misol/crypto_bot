@@ -246,14 +246,10 @@ def ai_filter(coin_df):
     VERBOSE = 1
     history = model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE, verbose=VERBOSE,
                         validation_data=(x_val, y_val))
-    # fig = plot_model_fit_history(history, EPOCHS)
-    # fig.show()
-    # 예측 값 출력
-    predicted = model.predict(x_test)
-    y_pred = np.argmax(predicted, axis=1)
-    Y_test = np.argmax(y_test, axis=1)
-    # cm = confusion_matrix(Y_test, y_pred)
-    # report = classification_report(Y_test, y_pred)
+    fig = plot_model_fit_history(history, EPOCHS)
+    fig.show()
+    # 내일 오를지 내릴지에 대한 label 예측 값 출력
+    future_price = predict(x_test, y_test, model)
 
 
 if __name__ == "__main__":
