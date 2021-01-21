@@ -1,41 +1,87 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
+from pandas import DataFrame
+import matplotlib.pyplot as plt
+
+from tensorflow.keras.models import Model
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import classification_report, confusion_matrix
-from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.layers import Input, Dense, LSTM, Activation, BatchNormalization, Dropout
-from tensorflow.keras import backend as K, regularizers
-from tensorflow.keras.metrics import CategoricalAccuracy, BinaryAccuracy
+from tensorflow.keras.layers import Input, Dense, LSTM
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras import backend as K
+from tensorflow.keras import regularizers
 
 
-def predict(x_test, y_test, model):
-    # 스케일 된 예측값을 계산 (0과 1사이의 값)
-    predicted = model.predict(x_test, verbose=1)
-    y_pred = np.argmax(predicted, axis=1)
-    Y_test = np.argmax(y_test, axis=1)
-    cm = confusion_matrix(Y_test, y_pred)
-    report = classification_report(Y_test, y_pred)
-    print(report)
+def back_testing(test_sample_df, y_pred):
+    # 3단계
+    lstm_book_df = test_sample_df[['Close', 'next_rtn']].copy()
+    t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
+    lstm_book_df = lstm_book_df.join(t1, how='left')
+    lstm_book_df.fillna(0, inplace=True)
+    lstm_book_df['ret'] = lstm_book_df['Close'].pct_change()
+    lstm_book_df['lstm_ret'] = lstm_book_df['next_rtn'] * lstm_book_df['position'].shift(1)
+    lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
+    lstm_book_df['bm_cumret'] = (lstm_book_df['ret'] + 1).cumprod()
+
+    lstm_book_df[['lstm_cumret', 'bm_cumret']].plot()
+
+    # Backtesting
+    historical_max = lstm_book_df['Close'].cummax()
+    daily_drawdown = lstm_book_df['Close'] / historical_max - 1.0
+    historical_dd = daily_drawdown.cummin()
+    historical_dd.plot()
+
+    # BM 바이앤홀드
+    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'bm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
+    Sharpe = np.mean(lstm_book_df['ret']) / np.std(lstm_book_df['ret']) * np.sqrt(252.)
+    VOL = np.std(lstm_book_df['ret']) * np.sqrt(252.)
+    MDD = historical_dd.min()
+    bm_text = f"""[BM 바이앤홀드]\n
+CAGR : {round(CAGR * 100, 2)}%
+Sharpe : {round(Sharpe, 2)}
+VOL : {round(VOL * 100, 2)}%
+MDD : {round(-1 * MDD * 100, 2)}%"""
+    print(bm_text)
+
+    # LSTM
+    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
+    Sharpe = np.mean(lstm_book_df['lstm_ret']) / np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
+    VOL = np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
+    MDD = historical_dd.min()
+    lstm_text = f"""[LSTM]\n
+CAGR : {round(CAGR * 100, 2)}%
+Sharpe : {round(Sharpe, 2)}
+VOL : {round(VOL * 100, 2)}%
+MDD : {round(-1 * MDD * 100, 2)}%"""
+    print(lstm_text)
+    f = open("history.txt", 'w')
+    for i in range(1, 11):
+        data = f"{bm_text}\n\n {lstm_text}"
+        f.write(data)
+    f.close()
 
 
-'''
-x_test.shape
-(218, 5, 8)
-predicted.shape
-(218, 5, 1)
-y_pred.shape
-(218, 1)
-y_test.shape
-(218, 1)
-? predicted와 y_test의 shape이 다르다..
+def plot_train_test(train_sample_df, test_sample_df):
+    plt.figure(figsize=(16, 5))
+    ax = plt.subplot(1, 2, 1)
+    plt.plot(train_sample_df['Close'])
+    plt.title("Train")
+    ax = plt.subplot(1, 2, 2)
+    plt.plot(test_sample_df['Close'])
+    plt.title("Test")
 
-if x_test[4][0][3] < x_test[5][0][3]
-y_test[4] = 1
-'''
+
+def plot_history(history):
+    plt.figure(figsize=(15, 5))
+    ax = plt.subplot(1, 2, 1)
+    plt.plot(history.history["loss"])
+    plt.title("Train loss")
+    ax = plt.subplot(1, 2, 2)
+    plt.plot(history.history["val_loss"])
+    plt.title("Test loss")
+    plt.savefig('sample.png')
 
 
 def create_model(x_train, num_unit):
-    # LSTM 모델을 생성한다.
     K.clear_session()
     # 입력데이터셋 형태에 맞게 지정
     # 케라스에서 첫번째 차원에는 데이터의 개수가 들어가는데, 임의의 스칼라를 의미하는 None 값을 넣어준다
@@ -43,23 +89,17 @@ def create_model(x_train, num_unit):
     input_layer = Input(batch_shape=(None, x_train.shape[1], x_train.shape[2]))
     # 다층 구조로 LSTM 층 위에 LSTM 층이 연결: LSTM(input)(input_layer)
     # return_sequences=True 이전 layer의 출력이 다음 layer의 입력으로 전달
-    layer_lstm1 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
-    # 배치정규화층을 이어준다
-    layer_lstm1 = BatchNormalization()(layer_lstm1)
-
-    layer_lstm2 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm1)
-    # 드롭아웃하여 임의의 확률로 가중치 선을 삭제 - 과적합 방지
-    layer_lstm2 = Dropout(0.25)(layer_lstm2)
-
-    layer_lstm3 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm2)
-    layer_lstm3 = BatchNormalization()(layer_lstm3)
-
-    layer_lstm4 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm3)
-    layer_lstm4 = Dropout(0.25)(layer_lstm4)
-
-    layer_lstm5 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm4)
-    layer_lstm5 = BatchNormalization()(layer_lstm5)
-    # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
+    layer_lstm_1 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
+    layer_lstm_1 = BatchNormalization()(layer_lstm_1)   # 배치정규화층을 이어준다
+    layer_lstm_2 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_1)
+    layer_lstm_2 = Dropout(0.25)(layer_lstm_2)  # 드롭아웃하여 임의의 확률로 가중치 선을 삭제 - 과적합 방지
+    layer_lstm_3 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_2)
+    layer_lstm_3 = BatchNormalization()(layer_lstm_3)
+    layer_lstm_4 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_3)
+    layer_lstm_4 = Dropout(0.25)(layer_lstm_4)
+    layer_lstm_5 = LSTM(num_unit, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_4)
+    layer_lstm_5 = BatchNormalization()(layer_lstm_5)
+    output_layer = Dense(2, activation='sigmoid')(layer_lstm_5) # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
     '''
     Dense 첫번째 인자 = units = 출력 뉴런의 수.
     input_dim = 입력 뉴런의 수. (입력의 차원)
@@ -69,7 +109,6 @@ def create_model(x_train, num_unit):
     - softmax : 셋 이상을 분류하는 다중 클래스 분류 문제에서 출력층에 주로 사용되는 활성화 함수.
     - relu : 은닉층에 주로 사용되는 활성화 함수.
     '''
-    output_layer = Dense(1, activation='sigmoid')(layer_lstm5)
     # output_layer = Dense(1, activation='softmax')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
     # RNN, LSTM 등을 학습시킬 때 사용
     # output_layer = Dense(1, activation='tanh')(layer_lstm5)
@@ -79,18 +118,21 @@ def create_model(x_train, num_unit):
     # 입력층과 출력층을 연결해 모델 객체를 만들어낸다.
     model = Model(input_layer, output_layer)
     # 모델 학습 방식을 설정하여 모델 객체를 만들어낸다. (손실함수, 최적화함수, 모델 성능 판정에 사용되는 지표)
-    # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     # binary_crossentropy - sigmoid, categorical_crossentropy - softmax 이 조합으로 사용된다.
     # 레이블 클래스가 두 개 뿐인 경우 (0과 1로 가정)이 교차 엔트로피 손실을 사용
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[BinaryAccuracy()])
     print(model.summary())
     return model
 
 
 def create_dataset_binary(data, feature_list, step, n):
+    '''
+    다음날 시종가 수익률 라벨링.
+    '''
     # LSTM 모델에 넣을 변수 데이터 선택
-    train_xdata = np.array(data[feature_list[:n]])  # 최소-최대 정규화된 데이터만 가져오기
+    train_xdata = np.array(data[feature_list[0:n]])
     # 마지막 단계
     m = np.arange(len(train_xdata) - step)
     x, y = [], []
@@ -99,48 +141,40 @@ def create_dataset_binary(data, feature_list, step, n):
         a = train_xdata[i:(i + step)]
         x.append(a)
     # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
-    x_batch = np.reshape(np.array(x), (len(m), step, n))  # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
+    # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
+    x_batch = np.reshape(np.array(x), (len(m), step, n))
 
-    # 레이블링 데이터를 만든다. (레이블 데이터는 다음날 종가)
-    # train_ydata = np.array(data[feature_list[n - 5]])  # Close_normal 값
-    train_ydata = np.array(data[feature_list[n]])  # ? github code, 이건 next_rtn 아닌가
-    # n_step 이상부터 답을 사용
+    # 레이블링 데이터를 만든다.
+    train_ydata = np.array(data[[feature_list[n]]])  # next_rtn 값
     for i in m + step:
-        # 이진 분류를 하기 위한 시작 종가
-        start_price = train_ydata[i - 1]
-        # 이진 분류르 하기 위한 종료 종가
-        end_price = train_ydata[i]
-
-        # 이진 분류: 종료 종가가 더 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
-        if end_price > start_price:
-            label = 1  # 오르면 1
+        # 이진 분류르 하기 위한 next_rtn
+        next_rtn = train_ydata[i][0]
+        # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
+        if next_rtn > 0:
+            label = 1
         else:
-            label = 0  # 떨어지면 0
+            label = 0
         # 임시로 생성된 레이블을 순차적으로 저장
         y.append(label)
     # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
     y_batch = np.reshape(np.array(y), (-1, 1))
-    # x_batch.shape: (662, 5, 8), y_batch.shape: (662, 1)
     return x_batch, y_batch
 
 
-def min_max_normal(tmp_df):
+def min_max_normal(tmp_df, all_features, feature4_list):
     eng_list = []
     sample_df = tmp_df.copy()
-    all_features = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
     for x in all_features:
-        if x in ('Date', 'next_rtn'):
+        if x in feature4_list:
             continue
         series = sample_df[x].copy()
         values = series.values
         values = values.reshape((len(values), 1))
-        # 스케일러생성 및 훈련
-        # sklearn 라이브러리에서 정규화 객체를 받는다.
+        # train the normalization. sklearn 라이브러리에서 정규화 객체를 받는다.
         scaler = MinMaxScaler(feature_range=(0, 1))
         # 입력 데이터에 대해 정규화 범위를 탐색
         scaler = scaler.fit(values)
-        # 데이터셋 정규화 및 출력
-        # 입력데이터를 최소-최대 정규화
+        # 데이터셋 정규화 및 출력 (최소-최대 정규화)
         normalized = scaler.transform(values)
         # 정규화된 데이터를 새로운 컬럼명으로 저장
         new_feature = f'{x}_normal'
@@ -159,27 +193,3 @@ def data_split(df):
     # produces a 60%, 20%, 20% split for training, validation and test sets.
     train_df, val_df, test_df = np.split(df, [int(.6 * len(df)), int(.8 * len(df))]).copy()
     return train_df, val_df, test_df
-
-
-def _data_split(examples, labels, train_frac=0.6, random_state=None):
-    ''' https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-    param data:       Data to be split
-    param train_frac: Ratio of train set to whole dataset
-
-    Randomly split dataset, based on these ratios:
-        'train': train_frac
-        'valid': (1-train_frac) / 2
-        'test':  (1-train_frac) / 2
-
-    Eg: passing train_frac=0.8 gives a 80% / 10% / 10% split
-    '''
-
-    assert 0 < train_frac <= 1, "Invalid training set fraction"
-
-    X_train, X_tmp, Y_train, Y_tmp = train_test_split(
-        examples, labels, train_size=train_frac, random_state=random_state)
-
-    X_val, X_test, Y_val, Y_test = train_test_split(
-        X_tmp, Y_tmp, train_size=0.5, random_state=random_state)
-
-    return X_train, X_val, X_test, Y_train, Y_val, Y_test
