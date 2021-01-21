@@ -57,9 +57,8 @@ MDD : {round(-1 * MDD * 100, 2)}%\n"""
 
     fcode = code.replace('/', '-')
     f = open(f"history-{fcode}.txt", 'w')
-    for i in range(1, 11):
-        data = f"{bm_text}\n\n{lstm_text}"
-        f.write(data)
+    data = f"{bm_text}\n\n{lstm_text}"
+    f.write(data)
     f.close()
 
 
