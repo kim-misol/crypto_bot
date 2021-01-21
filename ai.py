@@ -9,9 +9,10 @@ from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras import backend as K
 from tensorflow.keras import regularizers
+from tensorflow.keras.utils import to_categorical
 
 
-def back_testing(test_sample_df, y_pred):
+def back_testing(code, test_sample_df, y_pred):
     # 3단계
     lstm_book_df = test_sample_df[['Close', 'next_rtn']].copy()
     t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
@@ -35,7 +36,7 @@ def back_testing(test_sample_df, y_pred):
     Sharpe = np.mean(lstm_book_df['ret']) / np.std(lstm_book_df['ret']) * np.sqrt(252.)
     VOL = np.std(lstm_book_df['ret']) * np.sqrt(252.)
     MDD = historical_dd.min()
-    bm_text = f"""[BM 바이앤홀드]\n
+    bm_text = f"""[BM Buy and Hold]\n
 CAGR : {round(CAGR * 100, 2)}%
 Sharpe : {round(Sharpe, 2)}
 VOL : {round(VOL * 100, 2)}%
@@ -51,11 +52,13 @@ MDD : {round(-1 * MDD * 100, 2)}%"""
 CAGR : {round(CAGR * 100, 2)}%
 Sharpe : {round(Sharpe, 2)}
 VOL : {round(VOL * 100, 2)}%
-MDD : {round(-1 * MDD * 100, 2)}%"""
+MDD : {round(-1 * MDD * 100, 2)}%\n"""
     print(lstm_text)
-    f = open("history.txt", 'w')
+
+    fcode = code.replace('/', '-')
+    f = open(f"history-{fcode}.txt", 'w')
     for i in range(1, 11):
-        data = f"{bm_text}\n\n {lstm_text}"
+        data = f"{bm_text}\n\n{lstm_text}"
         f.write(data)
     f.close()
 
@@ -90,7 +93,7 @@ def create_model(x_train, num_unit):
     # 다층 구조로 LSTM 층 위에 LSTM 층이 연결: LSTM(input)(input_layer)
     # return_sequences=True 이전 layer의 출력이 다음 layer의 입력으로 전달
     layer_lstm_1 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
-    layer_lstm_1 = BatchNormalization()(layer_lstm_1)   # 배치정규화층을 이어준다
+    layer_lstm_1 = BatchNormalization()(layer_lstm_1)  # 배치정규화층을 이어준다
     layer_lstm_2 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_1)
     layer_lstm_2 = Dropout(0.25)(layer_lstm_2)  # 드롭아웃하여 임의의 확률로 가중치 선을 삭제 - 과적합 방지
     layer_lstm_3 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_2)
@@ -99,7 +102,7 @@ def create_model(x_train, num_unit):
     layer_lstm_4 = Dropout(0.25)(layer_lstm_4)
     layer_lstm_5 = LSTM(num_unit, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_4)
     layer_lstm_5 = BatchNormalization()(layer_lstm_5)
-    output_layer = Dense(2, activation='sigmoid')(layer_lstm_5) # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
+    output_layer = Dense(2, activation='sigmoid')(layer_lstm_5)  # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
     '''
     Dense 첫번째 인자 = units = 출력 뉴런의 수.
     input_dim = 입력 뉴런의 수. (입력의 차원)
@@ -158,6 +161,8 @@ def create_dataset_binary(data, feature_list, step, n):
         y.append(label)
     # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
     y_batch = np.reshape(np.array(y), (-1, 1))
+    y_batch = to_categorical(y_batch, 2)
+
     return x_batch, y_batch
 
 
