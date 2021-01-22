@@ -1,12 +1,9 @@
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import FinanceDataReader as fdr
 import backtrader as bt
 import numpy as np
-from pandas import DataFrame
-import pandas_datareader as pdr
 
 from graphs import draw_candle, draw_candle_with_indicator, plot_model_fit_history
 from data.code_list import stock_codes, coin_codes
@@ -122,7 +119,7 @@ class TestStrategy(bt.Strategy):
             elif self.simul_num == 2:
                 # 매수 조건
                 if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
-                    amountToOrder = int(self.broker.getcash() / self.close[0])
+                    amountToOrder = float(self.broker.getcash() / self.close[0])
                     self.order = self.buy(size=amountToOrder)
                     print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
                 # 매도 조건
