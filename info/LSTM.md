@@ -18,7 +18,7 @@ lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
 CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
 ```
 
-![](info/cagr 계산식.png)
+![](https://github.com/kim-misol/crypto_bot/blob/main/info/cagr%20%EA%B3%84%EC%82%B0%EC%8B%9D.png)
 
 ### Sharpe
 수익률은 높으면서 변동성은 낮기를 원한다. 
