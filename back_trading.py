@@ -38,7 +38,11 @@ class TestStrategy(bt.Strategy):
         self.pastMA20 = 0
         self.meanPrice = 0
         self.numberOfStocks = 0
-        self.simul_num = 2
+        self.simul_num = int(input(f"시뮬레이션 번호 : "))
+        self.use_ai_filter = True if input(f"AI 필터 사용 여부 : (y or n) ") == 'y' else False
+        self.train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
+        # self.train_ai_model = False
+
 
     '''
     Buy나 Sell 등 오더가 일어났을 때 호출되는 메서드이다
@@ -77,9 +81,9 @@ class TestStrategy(bt.Strategy):
     self.position이 True면 주식을 보유하고 있다는 의미이다. 
     또한 self.dataclose[0]는 현재 시뮬레이션 상 날짜(0)로, next메서드가 호출될 때 마다 한 칸씩 뒤로 밀리게 된다
     즉, 언제나 당일을 나타내는 index는 0이다
-    
+
     여기서 backtrader의 특징 중 하나가 나오는데, 전 날, 전전날을 나타내는 index는 1이나 2가 아니라, -1과 -2라는 점이다. 
-    
+
     주문을 하기 위해선 self.order = self.buy() 혹은 self.sell()을 하면 된다. 
     () 안에는 주문할 물량을 전달해 주면 된다.
     '''
@@ -91,10 +95,22 @@ class TestStrategy(bt.Strategy):
         else:
             MA5 = np.mean([self.close[n - 4] for n in range(5)])
             MA20 = np.mean([self.close[n - 19] for n in range(20)])
+            # ai model을 활용할 경우
+            label = 1  # 1: 산다
+            if self.use_ai_filter:
+                # train_ai_model 또는 model이 없는 경우
+                # not_exist_mode = True
+                # if (self.train_ai_model or not_exist_mode) and self.i == 20:
+                if self.train_ai_model and self.i == 20:
+                    label = train_model(coin_df, code)[self.i - 1]
+                else:
+                    label = use_model(coin_df, code)[self.i - 1]
+            print(f"{self.i}: {label}")
+
             if self.simul_num == 1:
                 # 매수 조건
                 if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
-                    amountToOrder = int(self.broker.getcash() / self.close[0])
+                    amountToOrder = float(self.broker.getcash() / self.close[0])
                     self.order = self.buy(size=amountToOrder)
                     print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
                 # 매도 조건
@@ -127,14 +143,12 @@ def data_settings(code, start=datetime(2020, 1, 1), end=datetime.today()):
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
     if invalid_data_cnt == 0:
-        # price_df['Date'] = price_df.index
         price_df['Open'] = price_df.iloc[:]['Open'].astype(np.float64)
         price_df['High'] = price_df.iloc[:]['High'].astype(np.float64)
         price_df['Low'] = price_df.iloc[:]['Low'].astype(np.float64)
         price_df['Close'] = price_df.iloc[:]['Close'].astype(np.float64)
         price_df['Volume'] = price_df.iloc[:]['Volume']
         price_df = bollinger_band(price_df)
-        # df = price_df.loc[:, ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb']].copy()
         df = price_df.loc[:, ['Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb']].copy()
         return df
     return False
@@ -264,13 +278,11 @@ if __name__ == "__main__":
     # code_list = stock_codes[:2]
     code_list = coin_codes
     total_profit, sum_rate = 0, 0
-    # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
-    # use_ai = True if input(f"AI 학습 사용 여부 : (y or n) ") in ('Y', 'y', 1, 'ㅛ') else False
+    # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") == 'y' else False
     use_graph = False
-    use_ai = True
-    if use_graph not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ') or use_ai not in ('Y', 'y', 1, 'ㅛ', 'N', 'n', 0, 'ㅜ'):
-        print('y 또는 n을 입력해주세요.')
-        exit(1)
+    # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
+    #     print('y 또는 n을 입력해주세요.')
+    #     exit(1)
 
     for code in code_list:
         print(f"종목 코드: {code}")
@@ -282,10 +294,6 @@ if __name__ == "__main__":
         # sum_get_data_time += get_data_time
 
         if coin_df is not False:
-            # ai 학습을 활용할 경우
-            if use_ai:
-                ai_filter(coin_df, code)
-
             # 해당 종목 시뮬
             profit, rate = simulator()
             # 손익 계산
