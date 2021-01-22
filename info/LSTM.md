@@ -18,7 +18,7 @@ lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
 CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
 ```
 
-![](https://github.com/kim-misol/crypto_bot/blob/main/info/cagr%20%EA%B3%84%EC%82%B0%EC%8B%9D.png)
+![](https://github.com/kim-misol/crypto_bot/blob/main/info/images/cagr.png)
 
 ### Sharpe
 수익률은 높으면서 변동성은 낮기를 원한다. 
@@ -32,7 +32,8 @@ lstm_book_df['lstm_ret'] = lstm_book_df['next_rtn'] * lstm_book_df['position'].s
 Sharpe = np.mean(lstm_book_df['lstm_ret']) / np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
 ``` 
 
-![Sharpe 계산식](\info/sharpe 계산식.png)
+![](https://github.com/kim-misol/crypto_bot/blob/main/info/images/sharpe.png)
+
 
 
 ### VOL
@@ -56,4 +57,5 @@ historical_dd = daily_drawdown.cummin()
 MDD = historical_dd.min()
 ```
 
-![MDD 계산식](/info/mdd 계산식.png)
+![](https://github.com/kim-misol/crypto_bot/blob/main/info/images/mdd.png)
+
