@@ -19,6 +19,7 @@ def plot_model_fit_history(history, x):
 
 def draw_candle_with_indicator(df, code):
     fig = go.Figure()
+    df['Date'] = df.index
 
     fig.add_trace(
         go.Scatter(
@@ -53,6 +54,8 @@ def draw_candle_with_indicator(df, code):
 
 
 def draw_candle(df, code):
+    df['Date'] = df.index
+
     fig = go.Figure(data=[go.Candlestick(x=df['Date'],
                                          open=df['Open'],
                                          high=df['High'],
