@@ -40,7 +40,6 @@ class TestStrategy(bt.Strategy):
         self.train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
         # self.train_ai_model = False
 
-
     '''
     Buy나 Sell 등 오더가 일어났을 때 호출되는 메서드이다
     전달값인 order의 다양한 attributes를 알고 싶다면 아래 링크 Documentation에서 확인할 수 있다. ex) order.size, order.price
@@ -102,12 +101,11 @@ class TestStrategy(bt.Strategy):
                     label = train_model(coin_df, code)[self.i - 1]
                 else:
                     label = use_model(coin_df, code)[self.i - 1]
-            print(f"{self.i}: {label}")
 
             if self.simul_num == 1:
                 # 매수 조건
                 if MA5 > MA20 and self.pastMA5 < self.pastMA20 and self.broker.getcash() > self.close[0]:
-                    amountToOrder = float(self.broker.getcash() / self.close[0])
+                    amountToOrder = int(self.broker.getcash() / self.close[0])
                     self.order = self.buy(size=amountToOrder)
                     print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
                 # 매도 조건
@@ -129,9 +127,11 @@ class TestStrategy(bt.Strategy):
                     self.order = self.sell(size=self.numberOfStocks)
             # label이 1이면 사고 0이면 판다
             elif self.simul_num == 3:
+                print(f"{self.i}: {label}")
+
                 # 매수 조건
                 if label == 1:
-                    amountToOrder = float(self.broker.getcash() / self.close[0])
+                    amountToOrder = int(self.broker.getcash() / self.close[0])
                     self.order = self.buy(size=amountToOrder)
                     print(f"{self.datas[0].datetime.date(0)} - BUY : {self.close[0]}, buy amount : {amountToOrder}")
                 # 매도 조건
