@@ -8,8 +8,11 @@ def train_model(coin_df, code):
     coin_df['next_rtn'] = coin_df['Close'] / coin_df['Open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
     train_df, val_df, test_df = data_split(coin_df)
-    all_features = ['Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
+    default_features = ['Open', 'High', 'Low', 'Close', 'Volume']
+    # add_features = ['ubb', 'mbb', 'lbb']
+    add_features = []
     extra_list = ['next_rtn']
+    all_features = default_features + add_features + extra_list
 
     # 최소-최대 정규화
     train_sample_df, eng_list = min_max_normal(train_df, all_features, extra_list)
@@ -56,8 +59,12 @@ def train_model(coin_df, code):
 
 def use_model(coin_df, code):
     coin_df['next_rtn'] = coin_df['Close'] / coin_df['Open'] - 1
-    all_features = ['Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
+    # all_features = ['Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
+    default_features = ['Open', 'High', 'Low', 'Close', 'Volume']
+    # add_features = ['ubb', 'mbb', 'lbb']
+    add_features = ['ubb', 'mbb', 'lbb']
     extra_list = ['next_rtn']
+    all_features = default_features + add_features + extra_list
 
     # 최소-최대 정규화
     coin_sample_df, eng_list = min_max_normal(coin_df, all_features, extra_list)
