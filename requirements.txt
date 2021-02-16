@@ -12,3 +12,4 @@ plotly
 kaleido
 sklearn
 tensorflow
+psycopg2-binary
