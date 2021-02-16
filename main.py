@@ -2,7 +2,7 @@ import FinanceDataReader as fdr
 import numpy as np
 import matplotlib.pylab as plt
 
-from trading_indicators import *
+from library.trading_indicators import *
 
 
 def create_trade_book(sample):

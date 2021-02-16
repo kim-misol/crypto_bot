@@ -1,14 +1,14 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import FinanceDataReader as fdr
 import backtrader as bt
 import numpy as np
 
-from graphs import draw_candle, draw_candle_with_indicator
-from data.code_list import stock_codes, coin_codes
-from trading_indicators import bollinger_band
-from ai_filter import train_model, use_model
+from library.graphs import draw_candle_with_indicator
+from data.code_list import coin_codes
+from library.trading_indicators import bollinger_band
+from library.ai_filter import train_model, use_model
 
 
 class TestStrategy(bt.Strategy):
@@ -91,7 +91,7 @@ class TestStrategy(bt.Strategy):
         else:
             MA5 = np.mean([self.close[n - 4] for n in range(5)])
             MA20 = np.mean([self.close[n - 19] for n in range(20)])
-            # ai model을 활용할 경우
+            # library model을 활용할 경우
             label = 1  # 1: 산다
             if self.use_ai_filter:
                 # train_ai_model 또는 model이 없는 경우
