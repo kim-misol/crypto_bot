@@ -10,9 +10,79 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras import backend as K
 from tensorflow.keras import regularizers
 from tensorflow.keras.utils import to_categorical
+import statistics
 
 
-def back_testing(code, test_sample_df, y_pred):
+def back_testing(code, test_sample_df, y_pred, ai_settings, history):
+    # 3단계
+    lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
+    t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
+    lstm_book_df = lstm_book_df.join(t1, how='left')
+    lstm_book_df.fillna(0, inplace=True)
+    lstm_book_df['ret'] = lstm_book_df['close'].pct_change()
+    lstm_book_df['lstm_ret'] = lstm_book_df['next_rtn'] * lstm_book_df['position'].shift(1)
+    lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
+    lstm_book_df['bm_cumret'] = (lstm_book_df['ret'] + 1).cumprod()
+
+    lstm_book_df[['lstm_cumret', 'bm_cumret']].plot()
+
+    # Backtesting
+    historical_max = lstm_book_df['close'].cummax()
+    daily_drawdown = lstm_book_df['close'] / historical_max - 1.0
+    historical_dd = daily_drawdown.cummin()
+    historical_dd.plot()
+
+    # BM 바이앤홀드
+    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'bm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
+    Sharpe = np.mean(lstm_book_df['ret']) / np.std(lstm_book_df['ret']) * np.sqrt(252.)
+    VOL = np.std(lstm_book_df['ret']) * np.sqrt(252.)
+    MDD = historical_dd.min()
+    bm_text = f"""[BM Buy and Hold]\n
+CAGR : {round(CAGR * 100, 2)}%
+Sharpe : {round(Sharpe, 2)}
+VOL : {round(VOL * 100, 2)}%
+MDD : {round(-1 * MDD * 100, 2)}%"""
+    print(bm_text)
+
+    # LSTM
+    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
+    Sharpe = np.mean(lstm_book_df['lstm_ret']) / np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
+    VOL = np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
+    MDD = historical_dd.min()
+    lstm_text = f"""[LSTM]\n
+CAGR : {round(CAGR * 100, 2)}%
+Sharpe : {round(Sharpe, 2)}
+VOL : {round(VOL * 100, 2)}%
+MDD : {round(-1 * MDD * 100, 2)}%
+
+========================================
+loss: {statistics.mean(history.history['loss'])}
+{history.history['loss']}
+
+acc: {statistics.mean(history.history['accuracy'])}
+{history.history['accuracy']}
+
+val_loss: {statistics.mean(history.history['val_loss'])}
+{history.history['val_loss']}
+
+val_acc: {statistics.mean(history.history['val_accuracy'])}
+{history.history['val_accuracy']}\n"""
+    print(lstm_text)
+
+    fcode = code.replace('/', '-')
+    # f = open(f"history/{fcode}.txt", 'w')
+    folder_name = 'test_history'
+    fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch{ai_settings['epochs']}_nstep{ai_settings['num_step']}\
+_units{ai_settings['num_units']}_batch{ai_settings['batch_size']}\
+_learning_rate{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer{ai_settings['optimizer']}\
+_loss{ai_settings['loss']}_activation{ai_settings['activation']}.txt"""
+    f = open(f"{fname}", 'w')
+    data = f"{bm_text}\n\n{lstm_text}"
+    f.write(data)
+    f.close()
+
+
+def _back_testing(code, test_sample_df, y_pred):
     # 3단계
     lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
     t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
