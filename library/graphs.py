@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 
-def plot_model_fit_history(history, x):
+def plot_model_fit_history(code, history, x):
     fig = go.Figure()
 
     for item in history.history.items():
@@ -13,6 +13,9 @@ def plot_model_fit_history(history, x):
                 y=y_value,
                 name=y_label
             ))
+    fig.update_layout(
+        title=code
+    )
 
     return fig
 
