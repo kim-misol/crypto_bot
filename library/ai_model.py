@@ -153,7 +153,7 @@ def plot_history(history):
     plt.savefig('sample.png')
 
 
-def create_model(x_train, num_unit):
+def create_model(x_train, ai_settings):
     K.clear_session()
     # 입력데이터셋 형태에 맞게 지정
     # 케라스에서 첫번째 차원에는 데이터의 개수가 들어가는데, 임의의 스칼라를 의미하는 None 값을 넣어준다
@@ -161,17 +161,17 @@ def create_model(x_train, num_unit):
     input_layer = Input(batch_shape=(None, x_train.shape[1], x_train.shape[2]))
     # 다층 구조로 LSTM 층 위에 LSTM 층이 연결: LSTM(input)(input_layer)
     # return_sequences=True 이전 layer의 출력이 다음 layer의 입력으로 전달
-    layer_lstm_1 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
+    layer_lstm_1 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
     layer_lstm_1 = BatchNormalization()(layer_lstm_1)  # 배치정규화층을 이어준다
-    layer_lstm_2 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_1)
+    layer_lstm_2 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_1)
     layer_lstm_2 = Dropout(0.25)(layer_lstm_2)  # 드롭아웃하여 임의의 확률로 가중치 선을 삭제 - 과적합 방지
-    layer_lstm_3 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_2)
+    layer_lstm_3 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_2)
     layer_lstm_3 = BatchNormalization()(layer_lstm_3)
-    layer_lstm_4 = LSTM(num_unit, return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_3)
+    layer_lstm_4 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_3)
     layer_lstm_4 = Dropout(0.25)(layer_lstm_4)
-    layer_lstm_5 = LSTM(num_unit, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_4)
+    layer_lstm_5 = LSTM(ai_settings['num_units'], recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_4)
     layer_lstm_5 = BatchNormalization()(layer_lstm_5)
-    output_layer = Dense(2, activation='sigmoid')(layer_lstm_5)  # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
+    output_layer = Dense(2, activation=ai_settings['activation'])(layer_lstm_5)  # Dense: 완전 연결층으로 연결되면서 최종 예측값을 출력
     '''
     Dense 첫번째 인자 = units = 출력 뉴런의 수.
     input_dim = 입력 뉴런의 수. (입력의 차원)
@@ -181,31 +181,22 @@ def create_model(x_train, num_unit):
     - softmax : 셋 이상을 분류하는 다중 클래스 분류 문제에서 출력층에 주로 사용되는 활성화 함수.
     - relu : 은닉층에 주로 사용되는 활성화 함수.
     '''
-    # output_layer = Dense(1, activation='softmax')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
-    # RNN, LSTM 등을 학습시킬 때 사용
-    # output_layer = Dense(1, activation='tanh')(layer_lstm5)
-    # CNN을 학습시킬 때 많이 사용, 0 이하의 값은 다음 레이어에 전달하지 않는다. 계산식 매우 간단함으로써 연산 속도가 빨라질 수 있고, 구현하기 편하다
-    # output_layer = Dense(1, activation='relu')(layer_lstm5) # 단점보완 LeakyReLU (일반적으로 알파를 0.01로 설정)
-
     # 입력층과 출력층을 연결해 모델 객체를 만들어낸다.
     model = Model(input_layer, output_layer)
     # 모델 학습 방식을 설정하여 모델 객체를 만들어낸다. (손실함수, 최적화함수, 모델 성능 판정에 사용되는 지표)
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # binary_crossentropy - sigmoid, categorical_crossentropy - softmax 이 조합으로 사용된다.
-    # 레이블 클래스가 두 개 뿐인 경우 (0과 1로 가정)이 교차 엔트로피 손실을 사용
-    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[BinaryAccuracy()])
+    model.compile(loss=ai_settings['loss'], optimizer=ai_settings['optimizer'], metrics=['accuracy'])
     print(model.summary())
     return model
 
 
-def create_dataset_binary(data, feature_list, step, n):
+def create_dataset_binary(data, feature_list, ai_settings, n):
     '''
     다음날 시종가 수익률 라벨링.
     '''
     # LSTM 모델에 넣을 변수 데이터 선택
     train_xdata = np.array(data[feature_list[0:n]])
     # 마지막 단계
+    step = ai_settings['num_step']
     m = np.arange(len(train_xdata) - step)
     x, y = [], []
     for i in m:
