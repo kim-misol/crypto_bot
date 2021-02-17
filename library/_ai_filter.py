@@ -1,14 +1,14 @@
 import numpy as np
 
-from ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
-from graphs import plot_model_fit_history
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
+from library.graphs import plot_model_fit_history
 
 
 def train_model(coin_df, code):
-    coin_df['next_rtn'] = coin_df['Close'] / coin_df['Open'] - 1
+    coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
     train_df, val_df, test_df = data_split(coin_df)
-    default_features = ['Open', 'High', 'Low', 'Close', 'Volume']
+    default_features = ['open', 'high', 'low', 'close', 'volume']
     # add_features = ['ubb', 'mbb', 'lbb']
     add_features = []
     extra_list = ['next_rtn']
@@ -59,9 +59,9 @@ def train_model(coin_df, code):
 
 
 def use_model(coin_df, code):
-    coin_df['next_rtn'] = coin_df['Close'] / coin_df['Open'] - 1
-    # all_features = ['Open', 'High', 'Low', 'Close', 'Volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
-    default_features = ['Open', 'High', 'Low', 'Close', 'Volume']
+    coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
+    # all_features = ['open', 'high', 'low', 'close', 'volume', 'ubb', 'mbb', 'lbb', 'next_rtn']
+    default_features = ['open', 'high', 'low', 'close', 'volume']
     # add_features = ['ubb', 'mbb', 'lbb']
     add_features = ['ubb', 'mbb', 'lbb']
     extra_list = ['next_rtn']
