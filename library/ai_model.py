@@ -14,11 +14,11 @@ from tensorflow.keras.utils import to_categorical
 
 def back_testing(code, test_sample_df, y_pred):
     # 3단계
-    lstm_book_df = test_sample_df[['Close', 'next_rtn']].copy()
+    lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
     t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
     lstm_book_df = lstm_book_df.join(t1, how='left')
     lstm_book_df.fillna(0, inplace=True)
-    lstm_book_df['ret'] = lstm_book_df['Close'].pct_change()
+    lstm_book_df['ret'] = lstm_book_df['close'].pct_change()
     lstm_book_df['lstm_ret'] = lstm_book_df['next_rtn'] * lstm_book_df['position'].shift(1)
     lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
     lstm_book_df['bm_cumret'] = (lstm_book_df['ret'] + 1).cumprod()
@@ -26,8 +26,8 @@ def back_testing(code, test_sample_df, y_pred):
     lstm_book_df[['lstm_cumret', 'bm_cumret']].plot()
 
     # Backtesting
-    historical_max = lstm_book_df['Close'].cummax()
-    daily_drawdown = lstm_book_df['Close'] / historical_max - 1.0
+    historical_max = lstm_book_df['close'].cummax()
+    daily_drawdown = lstm_book_df['close'] / historical_max - 1.0
     historical_dd = daily_drawdown.cummin()
     historical_dd.plot()
 
@@ -65,10 +65,10 @@ MDD : {round(-1 * MDD * 100, 2)}%\n"""
 def plot_train_test(train_sample_df, test_sample_df):
     plt.figure(figsize=(16, 5))
     ax = plt.subplot(1, 2, 1)
-    plt.plot(train_sample_df['Close'])
+    plt.plot(train_sample_df['close'])
     plt.title("Train")
     ax = plt.subplot(1, 2, 2)
-    plt.plot(test_sample_df['Close'])
+    plt.plot(test_sample_df['close'])
     plt.title("Test")
 
 

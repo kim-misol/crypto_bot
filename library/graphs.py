@@ -41,10 +41,10 @@ def draw_candle_with_indicator(df, code):
         ))
     fig.add_trace(
         go.Candlestick(x=df['Date'],
-                       open=df['Open'],
-                       high=df['High'],
-                       low=df['Low'],
-                       close=df['Close'],
+                       open=df['open'],
+                       high=df['high'],
+                       low=df['low'],
+                       close=df['close'],
                        increasing_line_color='red', decreasing_line_color='blue',
                        name="캔들"))
 
@@ -57,10 +57,10 @@ def draw_candle(df, code):
     df['Date'] = df.index
 
     fig = go.Figure(data=[go.Candlestick(x=df['Date'],
-                                         open=df['Open'],
-                                         high=df['High'],
-                                         low=df['Low'],
-                                         close=df['Close'],
+                                         open=df['open'],
+                                         high=df['high'],
+                                         low=df['low'],
+                                         close=df['close'],
                                          increasing_line_color='red', decreasing_line_color='blue')])
     fig.update_layout(
         title=code
