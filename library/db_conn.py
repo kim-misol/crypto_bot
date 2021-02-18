@@ -47,7 +47,8 @@ def get_min_candle(market_id, table_name="min_candle"):
     sql = f"""SELECT * 
     FROM public.{table_name}
     WHERE market_id = '{market_id}'
-        AND unit=1"""
+        AND unit=1 LIMIT 1000000
+order by created_at_kst asc"""
     mins = pd.read_sql(sql, engine)
     return mins
 
