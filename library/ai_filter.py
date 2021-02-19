@@ -27,7 +27,7 @@ def train_model(ai_filter_num, coin_df, code):
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
     else:
-        coin_df = coin_df[:2000]
+        coin_df = coin_df[:100000]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
@@ -89,3 +89,73 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
     else:
         return True
 
+
+def use_model(ai_filter_num, coin_df, code):
+    if ai_filter_num == 1001:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    else:
+        print("ai_filter_num 설정 오류")
+        exit(1)
+
+    # test 데이터의 사이즈가 클 경우 예측률 하락
+    if len(coin_df) > 100:
+        coin_df = coin_df[:100].copy()
+
+    coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
+    default_features = ['open', 'high', 'low', 'close', 'volume']
+    # add_features = ['ubb', 'mbb', 'lbb']
+    add_features = []
+    extra_list = ['next_rtn']
+    all_features = default_features + add_features + extra_list
+
+    # 최소-최대 정규화
+    coin_sample_df, eng_list = min_max_normal(coin_df, all_features, extra_list)
+    # n일 이동평균값 이용 시 nan 값 있는 데이터 제거, nan 값 제거 후 model.fit 할 때 loss도 정상 출력, 에측값도 정상
+    nan_cnt = np.where(np.isnan(coin_sample_df))[0][-1] + 1
+    train_sample_df = coin_sample_df[nan_cnt:]
+
+    if len(np.where(np.isnan(train_sample_df))[0]) == 0:
+        pass
+    else:
+        nan_cnt = np.where(np.isnan(train_sample_df))[0][-1] + 1
+        train_sample_df = train_sample_df[nan_cnt:]
+
+    # 레이블링 테이터
+    # (num_step)일치 (n_feature)개 변수의 데이터를 사용해 다음날 종가 예측
+    num_step = 5
+    eng_list = eng_list + extra_list
+    n_feature = len(eng_list) - 1  # next_rtn 을 제외한 feature 개수
+
+    # 훈련, 검증, 테스트 데이터를 변수 데이터와 레이블 데이터로 나눈다
+    x_test, y_test = create_dataset_binary(train_sample_df, eng_list, num_step, n_feature)
+
+    # 모델 불러오기
+    from tensorflow.keras.models import load_model
+    try:
+        folder_name = 'models'
+        model_fname = f"""{folder_name}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+    _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
+    _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
+    _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
+
+        model = load_model(model_fname)
+    except Exception:
+        # 저장된 모델이 없는 경우 학습
+        filtered = train_model(ai_filter_num, coin_df, code)
+
+    # 예측
+    predicted = model.predict(x_test)
+    y_pred = np.argmax(predicted, axis=1)
+
+    return y_pred
