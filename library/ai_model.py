@@ -56,27 +56,30 @@ VOL : {round(VOL * 100, 2)}%
 MDD : {round(-1 * MDD * 100, 2)}%
 
 ========================================
-loss: {statistics.mean(history.history['loss'])}
+mean loss: {statistics.mean(history.history['loss'])}
 {history.history['loss']}
 
-acc: {statistics.mean(history.history['accuracy'])}
+mean acc: {statistics.mean(history.history['accuracy'])}
 {history.history['accuracy']}
 
-val_loss: {statistics.mean(history.history['val_loss'])}
+mean val_loss: {statistics.mean(history.history['val_loss'])}
 {history.history['val_loss']}
 
-val_acc: {statistics.mean(history.history['val_accuracy'])}
+mean val_acc: {statistics.mean(history.history['val_accuracy'])}
+last val_acc: {history.history['val_accuracy'][-1]}
+MAX: {max(history.history['val_accuracy'])}
+MIN: {min(history.history['val_accuracy'])}
 {history.history['val_accuracy']}\n"""
     print(lstm_text)
 
     fcode = code.replace('/', '-')
-    # f = open(f"history/{fcode}.txt", 'w')
-    folder_name = 'test_history'
+    f = open(f"history/{fcode}.txt", 'w')
+    folder_name = 'history'
     fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch{ai_settings['epochs']}_nstep{ai_settings['num_step']}\
 _units{ai_settings['num_units']}_batch{ai_settings['batch_size']}\
 _learning_rate{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer{ai_settings['optimizer']}\
 _loss{ai_settings['loss']}_activation{ai_settings['activation']}.txt"""
-    f = open(f"{fname}", 'w')
+    # f = open(f"{fname}", 'w')
     data = f"{bm_text}\n\n{lstm_text}"
     f.write(data)
     f.close()
