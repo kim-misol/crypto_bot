@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import backtrader as bt
 import numpy as np
 
 from library.graphs import draw_candle_with_indicator

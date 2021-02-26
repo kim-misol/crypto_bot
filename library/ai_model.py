@@ -37,46 +37,6 @@ class CustomCallback(Callback):
             model_fname = f"""{folder_name}/model_{epoch}_of_{self.params['epochs']}.h5"""
             self.model.save(model_fname)
 
-    # def on_test_begin(self, logs=None):
-    #     keys = list(logs.keys())
-    #     print("Start testing; got log keys: {}".format(keys))
-
-    def on_test_end(self, logs=None):
-        keys = list(logs.keys())
-        print(f"Stop testing; got log keys: {keys}")
-
-    # def on_predict_begin(self, logs=None):
-    #     keys = list(logs.keys())
-    #     print("Start predicting; got log keys: {}".format(keys))
-    #
-    # def on_predict_end(self, logs=None):
-    #     keys = list(logs.keys())
-    #     print("Stop predicting; got log keys: {}".format(keys))
-
-    # def on_train_batch_begin(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print(f"...Training: start of batch {batch}; got log keys: {keys}")
-    #
-    # def on_train_batch_end(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print(f"...Training: end of batch {batch}; got log keys: {keys}")
-
-    # def on_test_batch_begin(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print("...Evaluating: start of batch {}; got log keys: {}".format(batch, keys))
-    #
-    # def on_test_batch_end(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print("...Evaluating: end of batch {}; got log keys: {}".format(batch, keys))
-    #
-    # def on_predict_batch_begin(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print("...Predicting: start of batch {}; got log keys: {}".format(batch, keys))
-    #
-    # def on_predict_batch_end(self, batch, logs=None):
-    #     keys = list(logs.keys())
-    #     print("...Predicting: end of batch {}; got log keys: {}".format(batch, keys))
-
 
 def back_testing(code, test_sample_df, y_pred, ai_settings, history):
     # 3단계
@@ -121,19 +81,26 @@ VOL : {round(VOL * 100, 2)}%
 MDD : {round(-1 * MDD * 100, 2)}%
 
 ========================================
-mean loss: {statistics.mean(history.history['loss'])}
+mean loss: 
+{statistics.mean(history.history['loss'])}
 {history.history['loss']}
 
-mean acc: {statistics.mean(history.history['accuracy'])}
+mean acc: 
+{statistics.mean(history.history['accuracy'])}
 {history.history['accuracy']}
 
-mean val_loss: {statistics.mean(history.history['val_loss'])}
+mean val_loss: 
+{statistics.mean(history.history['val_loss'])}
 {history.history['val_loss']}
 
-mean val_acc: {statistics.mean(history.history['val_accuracy'])}
-last val_acc: {history.history['val_accuracy'][-1]}
-MAX: {max(history.history['val_accuracy'])}
-MIN: {min(history.history['val_accuracy'])}
+mean val_acc: 
+{statistics.mean(history.history['val_accuracy'])}
+last val_acc: 
+{history.history['val_accuracy'][-1]}
+MAX: 
+{max(history.history['val_accuracy'])}
+MIN: 
+{min(history.history['val_accuracy'])}
 {history.history['val_accuracy']}\n"""
     print(lstm_text)
 
