@@ -12,6 +12,71 @@ from tensorflow.keras import regularizers
 from tensorflow.keras.utils import to_categorical
 import statistics
 
+from tensorflow.keras.callbacks import Callback
+
+
+class CustomCallback(Callback):
+    # def on_train_begin(self, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Starting training; got log keys: {}".format(keys))
+    #
+    # def on_train_end(self, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Stop training; got log keys: {}".format(keys))
+    #
+    # def on_epoch_begin(self, epoch, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Start epoch {} of training; got log keys: {}".format(epoch, keys))
+
+    def on_epoch_end(self, epoch, logs=None):
+        keys = list(logs.keys())
+        print(f"End epoch {epoch} of training; got log keys: {keys}")
+        # epoch 10마다 model 저장
+        if epoch % 10 == 0 and epoch != 0:
+            folder_name = 'training_models'
+            model_fname = f"""{folder_name}/model_{epoch}_of_{self.params['epochs']}.h5"""
+            self.model.save(model_fname)
+
+    # def on_test_begin(self, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Start testing; got log keys: {}".format(keys))
+
+    def on_test_end(self, logs=None):
+        keys = list(logs.keys())
+        print(f"Stop testing; got log keys: {keys}")
+
+    # def on_predict_begin(self, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Start predicting; got log keys: {}".format(keys))
+    #
+    # def on_predict_end(self, logs=None):
+    #     keys = list(logs.keys())
+    #     print("Stop predicting; got log keys: {}".format(keys))
+
+    # def on_train_batch_begin(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print(f"...Training: start of batch {batch}; got log keys: {keys}")
+    #
+    # def on_train_batch_end(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print(f"...Training: end of batch {batch}; got log keys: {keys}")
+
+    # def on_test_batch_begin(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print("...Evaluating: start of batch {}; got log keys: {}".format(batch, keys))
+    #
+    # def on_test_batch_end(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print("...Evaluating: end of batch {}; got log keys: {}".format(batch, keys))
+    #
+    # def on_predict_batch_begin(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print("...Predicting: start of batch {}; got log keys: {}".format(batch, keys))
+    #
+    # def on_predict_batch_end(self, batch, logs=None):
+    #     keys = list(logs.keys())
+    #     print("...Predicting: end of batch {}; got log keys: {}".format(batch, keys))
+
 
 def back_testing(code, test_sample_df, y_pred, ai_settings, history):
     # 3단계

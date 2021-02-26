@@ -130,7 +130,8 @@ def train_model(ai_filter_num, coin_df, code):
     # model 학습. 휸련데이터샛을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
     # validation_data를 총해 에폭이 끝날 때마다 학습 모델을 해당 데이터로 평가한다. 해당 데이터로 학습하지는 않는다.
     history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
-                        validation_data=(x_val, y_val), shuffle=False)
+                        validation_data=(x_val, y_val), shuffle=False,
+                        callbacks=[CustomCallback()])
     fig = plot_model_fit_history(code, history, ai_settings['epochs'])
     fig.show()
 
