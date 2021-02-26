@@ -1,6 +1,6 @@
 import numpy as np
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, CustomCallback
 from library.graphs import plot_model_fit_history
 
 
@@ -10,11 +10,76 @@ def train_model(ai_filter_num, coin_df, code):
             "table": "min1",
             "num_step": 5,
             "num_units": 200,
+            "epochs": 400,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1002:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 400,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "softmax",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1003:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 200,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "tanh",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1004:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 400,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "tanh",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
             "epochs": 50,
             "batch_size": 10,
             "learning_rate": 0.001,
             "optimizer": "adam",
             "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 999:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 3,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
             "activation": "sigmoid",
             "is_continuously_train": False
         }
