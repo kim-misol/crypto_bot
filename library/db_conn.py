@@ -47,15 +47,21 @@ def get_min_candle(market_id, table_name="min_candle"):
     sql = f"""SELECT * 
     FROM public.{table_name}
     WHERE market_id = '{market_id}'
-        AND unit=1 LIMIT 1000000"""
+        AND unit=1 
+        AND created_at_kst >= TO_TIMESTAMP('2019-01-01 01:00:00', 'YYYY-MM-DD HH:MI:SS')
+        ORDER BY created_at_kst DESC;"""
+        # LIMIT 1000000"""
+    # len(mins) : 586930(2020-01-01 01:00:00) 1104003(2019-01-01 01:00:00)
     mins = pd.read_sql(sql, engine)
     return mins
 
 
 if __name__ == "__main__":
-    get_table_list()
-    market_list = get_kr_market()
-    for market_id in market_list['id']:
-        min_candles = get_min_candle(market_id=market_id)
+    # get_table_list()
+    # market_list = get_kr_market()
+    # for market_id in market_list['id']:
+    #     min_candles = get_min_candle(market_id=market_id)
+    min_candles = get_min_candle(market_id=1)
+
 
 
