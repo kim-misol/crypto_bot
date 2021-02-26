@@ -55,7 +55,13 @@ if __name__ == "__main__":
     #     exit(1)
     # code = 'KRW-BTC'
     code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
-    market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+    if code == 'KRW-BTC':
+        market_id = 1
+    elif code == 'KRW-LTC':
+        market_id = 44
+    else:
+        market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+
     print(f"종목 코드: {code}")
     # get_data_start = datetime.now()
     # 종목별 데이터
