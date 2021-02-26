@@ -87,12 +87,12 @@ def train_model(ai_filter_num, coin_df, code):
         print("ai_filter_num 설정 오류")
         exit(1)
 
-    # 데이터가 1000개(1000일 or 1000분)가 넘지 않으면 예측도가 떨어지기 때문에 학습하지 않는다
-    if len(coin_df) < 1000:
+    # 데이터가 10000개(10000일 or 10000분)가 넘지 않으면 예측도가 떨어지기 때문에 학습하지 않는다
+    if len(coin_df) < 10000:
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
-    else:
-        coin_df = coin_df[:100000]
+    # else:
+    #     coin_df = coin_df[:100000]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
