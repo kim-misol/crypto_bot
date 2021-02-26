@@ -53,12 +53,14 @@ if __name__ == "__main__":
     # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
     #     print('y 또는 n을 입력해주세요.')
     #     exit(1)
-    code = 'KRW-LTC'
-    print(f"종목 코드: {code}\t라이트코인")
+    # code = 'KRW-BTC'
+    code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+    print(f"종목 코드: {code}")
     # get_data_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
-    coin_df = data_settings(market_id=44)
+    coin_df = data_settings(market_id=market_id)
     # get_data_time = datetime.now() - get_data_start
     # sum_get_data_time += get_data_time
 
@@ -68,7 +70,9 @@ if __name__ == "__main__":
         # train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
         use_ai_filter = True
         train_ai_model = True
-        ai_filter_num = 1001
+        # ai_filter_num = 1001 1002 1003 1004
+        # ai_filter_num = 999
+        ai_filter_num = int(input(f"ai_filter_num 입력: "))
 
         label = 1  # 1: 산다
         if use_ai_filter:
