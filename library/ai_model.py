@@ -73,14 +73,14 @@ MIN: {min(history.history['val_accuracy'])}
     print(lstm_text)
 
     fcode = code.replace('/', '-')
-    f = open(f"history/{fcode}.txt", 'w')
+    # f = open(f"history/{fcode}.txt", 'w')
     folder_name = 'history'
     fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch{ai_settings['epochs']}_nstep{ai_settings['num_step']}\
 _units{ai_settings['num_units']}_batch{ai_settings['batch_size']}\
 _learning_rate{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer{ai_settings['optimizer']}\
 _loss{ai_settings['loss']}_activation{ai_settings['activation']}.txt"""
-    # f = open(f"{fname}", 'w')
-    data = f"{bm_text}\n\n{lstm_text}"
+    f = open(f"{fname}", 'w')
+    data = f"{bm_text}\n\n{lstm_text}\n\n{ai_settings}"
     f.write(data)
     f.close()
 
