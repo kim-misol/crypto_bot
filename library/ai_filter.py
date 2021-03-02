@@ -1,10 +1,12 @@
 import numpy as np
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, CustomCallback
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, \
+    CustomCallback
 from library.graphs import plot_model_fit_history
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
-def train_model(ai_filter_num, coin_df, code):
+def train_model(ai_filter_num, df, code):
     if ai_filter_num == 1001:
         ai_settings = {
             "table": "min1",
@@ -70,6 +72,19 @@ def train_model(ai_filter_num, coin_df, code):
             "activation": "sigmoid",
             "is_continuously_train": False
         }
+    elif ai_filter_num == 2:
+        ai_settings = {
+            "table": "min1",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "relu",
+            "is_continuously_train": False
+        }
     elif ai_filter_num == 999:
         ai_settings = {
             "table": "min1",
@@ -87,12 +102,13 @@ def train_model(ai_filter_num, coin_df, code):
         print("ai_filter_num 설정 오류")
         exit(1)
 
+    coin_df = df.copy()
     # 데이터가 10000개(10000일 or 10000분)가 넘지 않으면 예측도가 떨어지기 때문에 학습하지 않는다
     if len(coin_df) < 10000:
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
-    # else:
-    #     coin_df = coin_df[:100000]
+    else:
+        coin_df = coin_df[:100]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
@@ -125,13 +141,27 @@ def train_model(ai_filter_num, coin_df, code):
     x_val, y_val = create_dataset_binary(val_sample_df, eng_list, ai_settings, n_feature)
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, ai_settings, n_feature)
 
+    # 50번이상 더 좋은 결과가 없으면 학습을 멈춤
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50)
+    # 훈련 중간 중간 현재 Parameter의 값들을 저장
+    filename = 'checkpoint-epoch-{}-batch-{}-trial-001.h5'.format(ai_settings['epochs'], ai_settings['batch_size'])
+    checkpoint = ModelCheckpoint(filename,  # file명을 지정합니다
+                                 monitor='val_loss',  # val_loss 값이 개선되었을때 호출됩니다
+                                 verbose=1,  # 로그를 출력합니다
+                                 save_best_only=True,  # 가장 best 값만 저장합니다
+                                 mode='auto'  # auto는 알아서 best를 찾습니다. min/max
+                                 )
+
     # model 생성
     model = create_model(x_train, ai_settings)
     # model 학습. 휸련데이터샛을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
     # validation_data를 총해 에폭이 끝날 때마다 학습 모델을 해당 데이터로 평가한다. 해당 데이터로 학습하지는 않는다.
+    # history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
+    #                     validation_data=(x_val, y_val), shuffle=False,
+    #                     callbacks=[CustomCallback()])
     history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
                         validation_data=(x_val, y_val), shuffle=False,
-                        callbacks=[CustomCallback()])
+                        callbacks=[early_stopping, checkpoint])
     fig = plot_model_fit_history(code, history, ai_settings['epochs'])
     fig.show()
 
