@@ -11,6 +11,8 @@ trading_calendars
 plotly
 kaleido
 sklearn
-tensorflow
 psycopg2-binary
 openpyxl
+tensorflow==2.3.0
+tensorflow-datasets==4.1.0
+Pillow==8.1.0
