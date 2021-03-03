@@ -107,8 +107,6 @@ def train_model(ai_filter_num, df, code):
     if len(coin_df) < 10000:
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
-    else:
-        coin_df = coin_df[:100]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
@@ -142,10 +140,10 @@ def train_model(ai_filter_num, df, code):
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, ai_settings, n_feature)
 
     # 50번이상 더 좋은 결과가 없으면 학습을 멈춤
-    early_stopping = EarlyStopping(monitor='val_loss', patience=50)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
     # 훈련 중간 중간 현재 Parameter의 값들을 저장
     filename = 'checkpoint-epoch-{}-batch-{}-trial-001.h5'.format(ai_settings['epochs'], ai_settings['batch_size'])
-    checkpoint = ModelCheckpoint(filename,  # file명을 지정합니다
+    checkpointer = ModelCheckpoint(filename,  # file명을 지정합니다
                                  monitor='val_loss',  # val_loss 값이 개선되었을때 호출됩니다
                                  verbose=1,  # 로그를 출력합니다
                                  save_best_only=True,  # 가장 best 값만 저장합니다
