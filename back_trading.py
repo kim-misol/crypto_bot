@@ -44,16 +44,13 @@ def save_graph(coin_df, code):
 
 
 if __name__ == "__main__":
-    # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
-    code_list = coin_codes
-    total_profit, sum_rate = 0, 0
     # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") == 'y' else False
     use_graph = False
     # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
     #     print('y 또는 n을 입력해주세요.')
     #     exit(1)
-    # code = 'KRW-BTC'
-    code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    code = 'KRW-BTC'
+    # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
     if code == 'KRW-BTC':
         market_id = 1
     elif code == 'KRW-LTC':
@@ -62,12 +59,8 @@ if __name__ == "__main__":
         market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
 
     print(f"종목 코드: {code}")
-    # get_data_start = datetime.now()
     # 종목별 데이터
-    # $ 백테스팅 시작 날짜 설정
     coin_df = data_settings(market_id=market_id)
-    # get_data_time = datetime.now() - get_data_start
-    # sum_get_data_time += get_data_time
 
     if coin_df is not False:
         # ai model 학습 또는 사용
@@ -90,8 +83,3 @@ if __name__ == "__main__":
             save_graph(coin_df, code)
     else:
         print('데이터에 결측치가 존재합니다.')
-
-    total_rate = sum_rate / len(code_list)
-    print(f"총 수익: {total_profit}\n수익률: {total_rate}")
-    # print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
-    # print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
