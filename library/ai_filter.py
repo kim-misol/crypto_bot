@@ -1,7 +1,6 @@
 import numpy as np
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, \
-    CustomCallback
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
 from library.graphs import plot_model_fit_history
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
