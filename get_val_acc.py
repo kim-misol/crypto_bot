@@ -15,7 +15,7 @@ def save_model_hyperparams_results():
     print(cwd)
     files = list(cwd.glob('*'))
     print(files)
-    df = pd.DataFrame(columns=['code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
+    df = pd.DataFrame(columns=['market', 'code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
                                'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
                                'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
                                'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
@@ -38,10 +38,10 @@ def save_model_hyperparams_results():
         val_acc_list = txt_list[35]
 
         c = pd.DataFrame(
-            [[code, fname, "2019-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'], ai['num_units'],
+            [['crypto', code, fname, "2019-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'], ai['num_units'],
               ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'], ai['activation'],
               avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc, min_val_acc, val_acc_list]],
-            columns=['code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
+            columns=['market', 'code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
                      'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
                      'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
                      'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
