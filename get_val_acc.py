@@ -8,17 +8,17 @@ import statistics
 import pandas as pd
 import ast
 
+
 def save_model_hyperparams_results():
     dir_name = 'history'
     cwd = Path.cwd() / dir_name
     print(cwd)
     files = list(cwd.glob('*'))
     print(files)
-
     df = pd.DataFrame(columns=['code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
-                              'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
-                              'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
-                              'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
+                               'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
+                               'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
+                               'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
     for file in files:
         fname = str(file).split("\\")[-1][:-4]
         code = fname.split('_')[0]
@@ -37,16 +37,16 @@ def save_model_hyperparams_results():
         min_val_acc = txt_list[34]
         val_acc_list = txt_list[35]
 
-        c = pd.DataFrame([[code, fname, "2019-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'], ai['num_units'],
-                            ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'], ai['activation'],
-                            avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc, min_val_acc, val_acc_list]],
-                          columns=['code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
-                                   'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
-                                   'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
-                                   'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
+        c = pd.DataFrame(
+            [[code, fname, "2019-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'], ai['num_units'],
+              ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'], ai['activation'],
+              avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc, min_val_acc, val_acc_list]],
+            columns=['code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
+                     'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
+                     'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
+                     'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
         df = df.append(c)
     df.to_excel(f"train_log/results_{str(datetime.now())[:16].replace(':', '_')}.xlsx")
-
 
 
 # train log에서 val_accuracy 리스트로 만들어서 예측률 비교
