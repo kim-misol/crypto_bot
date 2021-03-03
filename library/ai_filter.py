@@ -143,11 +143,11 @@ def train_model(ai_filter_num, df, code):
     # 훈련 중간 중간 현재 Parameter의 값들을 저장
     filename = 'checkpoint-epoch-{}-batch-{}-trial-001.h5'.format(ai_settings['epochs'], ai_settings['batch_size'])
     checkpointer = ModelCheckpoint(filename,  # file명을 지정합니다
-                                 monitor='val_loss',  # val_loss 값이 개선되었을때 호출됩니다
-                                 verbose=1,  # 로그를 출력합니다
-                                 save_best_only=True,  # 가장 best 값만 저장합니다
-                                 mode='auto'  # auto는 알아서 best를 찾습니다. min/max
-                                 )
+                                   monitor='val_loss',  # val_loss 값이 개선되었을때 호출됩니다
+                                   verbose=1,  # 로그를 출력합니다
+                                   save_best_only=True,  # 가장 best 값만 저장합니다
+                                   mode='auto'  # auto는 알아서 best를 찾습니다. min/max
+                                   )
 
     # model 생성
     model = create_model(x_train, ai_settings)
@@ -158,7 +158,7 @@ def train_model(ai_filter_num, df, code):
     #                     callbacks=[CustomCallback()])
     history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
                         validation_data=(x_val, y_val), shuffle=False,
-                        callbacks=[early_stopping, checkpoint])
+                        callbacks=[checkpointer, early_stopping])
     fig = plot_model_fit_history(code, history, ai_settings['epochs'])
     fig.show()
 
