@@ -61,13 +61,11 @@ if __name__ == "__main__":
     else:
         market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
 
-    print(f"종목 코드: {code}")
-    # get_data_start = datetime.now()
+    print(f"종목 코드: {code} {market_id}")
+    simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
     coin_df = data_settings(market_id=market_id)
-    # get_data_time = datetime.now() - get_data_start
-    # sum_get_data_time += get_data_time
 
     if coin_df is not False:
         # ai model 학습 또는 사용
@@ -92,6 +90,5 @@ if __name__ == "__main__":
         print('데이터에 결측치가 존재합니다.')
 
     total_rate = sum_rate / len(code_list)
-    print(f"총 수익: {total_profit}\n수익률: {total_rate}")
-    # print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
-    # print(f"데이터 콜렉팅을 제외한 소요 시간: {datetime.now() - simul_start - sum_get_data_time}")
+    # print(f"총 수익: {total_profit}\n수익률: {total_rate}")
+    print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
