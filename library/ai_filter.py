@@ -89,11 +89,11 @@ def train_model(ai_filter_num, df, code):
             "table": "min1",
             "num_step": 5,
             "num_units": 200,
-            "epochs": 3,
-            "batch_size": 64,
+            "epochs": 10,
+            "batch_size": 10,
             "learning_rate": 0.001,
             "optimizer": "adam",
-            "loss": "mse",
+            "loss": "categorical_crossentropy",
             "activation": "sigmoid",
             "is_continuously_train": False
         }
