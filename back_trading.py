@@ -10,8 +10,8 @@ from library.ai_filter import train_model, use_model
 from library.db_conn import get_min_candle
 
 
-def data_settings(market_id=1):
-    price_df = get_min_candle(market_id=market_id)
+def data_settings(market, unit):
+    price_df = get_min_candle(market=market, unit=unit)
     # 결측치 존재 유무 확인
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
@@ -61,11 +61,17 @@ if __name__ == "__main__":
     else:
         market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
 
+    unit = int(input(f"unit: (예시. 1: 1분봉, 3: 3분봉)"))
+    if unit in (1, 3):
+        market = market_id
+    else:
+        market = code
+
     print(f"종목 코드: {code} {market_id}")
     simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
-    coin_df = data_settings(market_id=market_id)
+    coin_df = data_settings(market=market, unit=unit)
 
     if coin_df is not False:
         # ai model 학습 또는 사용
@@ -80,7 +86,7 @@ if __name__ == "__main__":
         label = 1  # 1: 산다
         if use_ai_filter:
             if train_ai_model:
-                label = train_model(ai_filter_num, coin_df, code)
+                label = train_model(ai_filter_num, coin_df, code, unit)
             else:
                 label = use_model(coin_df, code)
 
