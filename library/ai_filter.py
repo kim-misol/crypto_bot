@@ -1,14 +1,13 @@
-import numpy as np
-import os
 from pathlib import Path
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, \
-    CustomCallback
+import numpy as np
 from library.graphs import plot_model_fit_history
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-
-
 # from tensorflow.train import latest_checkpoint
+
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
+from library.ai_setting_list import get_ai_settings
+
 
 def get_last_epoch_from_checkpoint():
     dir_name = 'checkpoint'
