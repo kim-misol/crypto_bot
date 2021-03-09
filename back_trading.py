@@ -43,7 +43,7 @@ def save_graph(coin_df, code):
     fig.write_html(f"img/{today}/{fcode}.html")
 
 
-if __name__ == "__main__":
+def run():
     # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
     code_list = coin_codes
     total_profit, sum_rate = 0, 0
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
     #     print('y 또는 n을 입력해주세요.')
     #     exit(1)
-    # code = 'KRW-BTC'
-    code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    code = 'KRW-BTC'
     if code == 'KRW-BTC':
         market_id = 1
     elif code == 'KRW-LTC':
@@ -98,3 +98,55 @@ if __name__ == "__main__":
     total_rate = sum_rate / len(code_list)
     # print(f"총 수익: {total_profit}\n수익률: {total_rate}")
     print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+
+
+def run_unit_list():
+    # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    code = 'KRW-BTC'
+    if code == 'KRW-BTC':
+        market_id = 1
+    elif code == 'KRW-LTC':
+        market_id = 44
+    else:
+        market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+
+    # units = [1, 3, 5, 10, 15, 30, 60, 240]
+    units = [60, 30, 15, 10, 5, 3, 1]
+
+    for unit in units:
+        if unit in (1, 3):
+            market = market_id
+        else:
+            market = code
+
+        print(f"종목 코드: {code} {market_id} unit:{unit}")
+        simul_start = datetime.now()
+        # 종목별 데이터
+        # $ 백테스팅 시작 날짜 설정
+        coin_df = data_settings(market=market, unit=unit)
+
+        if coin_df is not False:
+            # ai model 학습 또는 사용
+            # use_ai_filter = True if input(f"AI 필터 사용 여부 : (y or n) ") == 'y' else False
+            # train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
+            use_ai_filter = True
+            train_ai_model = True
+            ai_filter_num = 116
+
+            label = 1  # 1: 산다
+            if use_ai_filter:
+                if train_ai_model:
+                    label = train_model(ai_filter_num, coin_df, code, unit)
+                else:
+                    label = use_model(coin_df, code)
+        else:
+            print('데이터에 결측치가 존재합니다.')
+
+        print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+
+    print(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+
+
+if __name__ == "__main__":
+    # run()
+    run_unit_list()
