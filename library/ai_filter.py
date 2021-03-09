@@ -25,108 +25,12 @@ def get_last_epoch_from_checkpoint():
 
 
 def train_model(ai_filter_num, df, code, unit):
-    if ai_filter_num == 1001:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 400,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "mse",
-            "activation": "sigmoid",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 1002:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 400,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "mse",
-            "activation": "softmax",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 1003:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 200,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "mse",
-            "activation": "tanh",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 1004:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 400,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "mse",
-            "activation": "tanh",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 1:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 50,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "categorical_crossentropy",
-            "activation": "sigmoid",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 2:    # loss is nan
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 50,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "categorical_crossentropy",
-            "activation": "relu",
-            "is_continuously_train": False
-        }
-    elif ai_filter_num == 999:
-        ai_settings = {
-            "table": f"min{unit}",
-            "num_step": 5,
-            "num_units": 200,
-            "epochs": 10,
-            "batch_size": 10,
-            "learning_rate": 0.001,
-            "optimizer": "adam",
-            "loss": "categorical_crossentropy",
-            "activation": "sigmoid",
-            "is_continuously_train": False
-        }
-    else:
-        print("ai_filter_num 설정 오류")
-        exit(1)
-
+    get_ai_settings(ai_filter_num, unit)
     coin_df = df.copy()
     # 데이터가 10000개(10000일 or 10000분)가 넘지 않으면 예측도가 떨어지기 때문에 학습하지 않는다
     if len(coin_df) < 10000:
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
-    # else:  # delete (테스트용)
-    #     coin_df = coin_df[:1000]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
