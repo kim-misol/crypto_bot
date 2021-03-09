@@ -1,15 +1,16 @@
 '''
 history direactory에 쌓인 모델별, 종목별 예측 확률 비교
 '''
-import os
-from pathlib import Path
-from datetime import datetime
-import statistics
-import pandas as pd
 import ast
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+from tensorflow.keras.models import load_model
+from library.ai_model import data_split, min_max_normal, create_dataset_binary
 
 
-def save_model_hyperparams_results():
+def save_hyperparams_n_results_from_history():
     dir_name = 'history'
     cwd = Path.cwd() / dir_name
     print(cwd)
@@ -38,7 +39,8 @@ def save_model_hyperparams_results():
         val_acc_list = txt_list[35]
 
         c = pd.DataFrame(
-            [['crypto', code, fname, "2019-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'], ai['num_units'],
+            [['crypto', code, fname, "2020-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'], ai['num_step'],
+              ai['num_units'],
               ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'], ai['activation'],
               avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc, min_val_acc, val_acc_list]],
             columns=['market', 'code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
