@@ -107,13 +107,14 @@ MIN:
     fcode = code.replace('/', '-')
     # f = open(f"history/{fcode}.txt", 'w')
     folder_name = 'history'
-    fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch{ai_settings['epochs']}_nstep{ai_settings['num_step']}\
-_units{ai_settings['num_units']}_batch{ai_settings['batch_size']}\
-_learning_rate{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer{ai_settings['optimizer']}\
-_loss{ai_settings['loss']}_activation{ai_settings['activation']}.txt"""
-    f = open(f"{fname}", 'w')
-    data = f"{bm_text}\n\n{lstm_text}\n\n{ai_settings}"
-    f.write(data)
+    fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+_units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
+_learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
+_loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.txt"""
+    data = f"{bm_text}\n\n{lstm_text}\n\n모델 정확도:\n{float(acc)*100}%\n{ai_settings}"
+    encoded_data = data.encode("utf8")
+    f = open(f"{fname}", 'wb')
+    f.write(encoded_data)
     f.close()
 
 
