@@ -166,6 +166,41 @@ def get_val_accuracy():
         print(round(sum(val_acc_list) / len(val_acc_list), 4))
 
 
+def change_filename():
+    import os
+    files = path_setting()
+    # 파일명 변경 코드
+    for file in files:
+        fname = str(file)
+        # new_fname = fname.replace('model_', '')
+        new_fname = fname.replace('__', '_')
+        # new_fname = fname.replace('epoch', 'epoch_')
+        # new_fname = new_fname.replace('nstep', 'nstep_')
+        # new_fname = new_fname.replace('units', 'units_')
+        # new_fname = new_fname.replace('batch', 'batch_')
+        # new_fname = new_fname.replace('rate', 'rate_')
+        # new_fname = new_fname.replace('optimizer', 'optimizer_')
+        # new_fname = new_fname.replace('loss', 'loss_')
+        # new_fname = new_fname.replace('activation', 'activation_')
+        print(new_fname)
+        os.rename(fname, new_fname)
+
+
+def path_setting():
+    # dir_name = 'models'
+    dir_name = 'history'
+    cwd = Path.cwd() / dir_name
+    print(cwd)
+    files = list(cwd.glob('*'))
+    print(files)
+    return files
+
+
 if __name__ == "__main__":
     # get_val_accuracy()
-    save_model_hyperparams_results()
+    # history로 저장된 텍스트 파일의 내용을 가져와서 엑셀에 정리
+    # save_hyperparams_n_results_from_history()
+    # 파일명 변경
+    # change_filename()
+    # + model 정확도 추가
+    save_hyperparams_n_results_from_model()
