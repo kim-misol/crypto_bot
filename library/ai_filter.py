@@ -138,33 +138,60 @@ def train_model(ai_filter_num, df, code):
     x_val, y_val = create_dataset_binary(val_sample_df, eng_list, ai_settings, n_feature)
     x_test, y_test = create_dataset_binary(test_sample_df, eng_list, ai_settings, n_feature)
 
-    # 50번이상 더 좋은 결과가 없으면 학습을 멈춤
-    early_stopping = EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
     # 훈련 중간 중간 현재 Parameter의 값들을 저장
-    filename = 'checkpoint-epoch-{}-batch-{}-trial-001.h5'.format(ai_settings['epochs'], ai_settings['batch_size'])
-    checkpointer = ModelCheckpoint(filename,  # file명을 지정합니다
-                                 monitor='val_loss',  # val_loss 값이 개선되었을때 호출됩니다
-                                 verbose=1,  # 로그를 출력합니다
-                                 save_best_only=True,  # 가장 best 값만 저장합니다
-                                 mode='auto'  # auto는 알아서 best를 찾습니다. min/max
-                                 )
+    checkpoint_path = "checkpoint/" + code + "_cp--{epoch:04d}.ckpt"
+    # checkpoint_dir = os.path.dirname(checkpoint_path)
+    # print(f"checkpoint_dir: {checkpoint_dir}") # checkpoint
+    # keras 에서 제공하는 callback함수는 모델 훈련과정을 제어
+    callback_list = [
+        EarlyStopping(  # 성능 향상이 멈추면 훈련을 중지
+            monitor='val_accuracy',  # 모델 검증 정확도를 모니터링
+            patience=25,  # 1 + 에포크 (즉, 26에포크 동안 정확도가 향상되지 않으면 훈련 중지
+            restore_best_weights=True
+        ),
+        ModelCheckpoint(  # 텐서플로 체크포인트 파일을 만들고 에포크가 종료될 때마다 업데이트 (에포크마다 가중치를 저장)
+            filepath=checkpoint_path,  # 모델 파일 경로
+            # monitor='val_loss',           # val_loss 가 좋아지지 않으면 모델 파일을 덮어쓰지 않음.
+            save_best_only=True,
+            verbose=1
+        )
+    ]
 
     # model 생성
     model = create_model(x_train, ai_settings)
-    # model 학습. 휸련데이터샛을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
+    cp_code, cp_epoch, cp_file_name = get_last_epoch_from_checkpoint()
+
+    # 가중치 복원
+    if code == cp_code and 'y' == input(f"가중치 복원 여부: (y or n)"):
+        try:
+            model.load_weights(f"checkpoint/{cp_file_name}")
+            print(ai_settings['epochs'], cp_epoch)
+            loss, acc = model.evaluate(x_test, y_test, verbose=0)
+            print(f"{cp_file_name}\n불러온 모델 정확도: {float(acc) * 100}%")
+        except Exception:
+            # checkpoint 파일을 수동으로 삭제한 경우
+            # 수동을 가중치 저장
+            model.save_weights(checkpoint_path.format(epoch=0))
+    else:
+        # 마지막에 저장된 checkpoint가 해당 종목에 관한 모델이 아닌 경우
+        # 수동을 가중치 저장
+        model.save_weights(checkpoint_path.format(epoch=0))
+
+    # model 학습. 휸련데이터셋을 이용해 epochs만큼 반복 훈련 (논문에선 5000으로 설정). verbose 로그 출력 설정
     # validation_data를 총해 에폭이 끝날 때마다 학습 모델을 해당 데이터로 평가한다. 해당 데이터로 학습하지는 않는다.
-    # history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
-    #                     validation_data=(x_val, y_val), shuffle=False,
-    #                     callbacks=[CustomCallback()])
     history = model.fit(x_train, y_train, epochs=ai_settings['epochs'], batch_size=ai_settings['batch_size'],
-                        validation_data=(x_val, y_val), shuffle=False,
-                        callbacks=[early_stopping, checkpoint])
-    fig = plot_model_fit_history(code, history, ai_settings['epochs'])
-    fig.show()
+                        validation_data=(x_val, y_val), shuffle=False, verbose=1,
+                        callbacks=callback_list)
+
+    # model 평가
+    loss, acc = model.evaluate(x_test, y_test, verbose=0)
+    print(f"모델 정확도: {float(acc) * 100}%")
+    # fig = plot_model_fit_history(code, history, ai_settings['epochs'])
+    # fig.show()
 
     # model 저장
     folder_name = 'models'
-    model_fname = f"""{folder_name}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+    model_fname = f"""{folder_name}/{code}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
@@ -238,9 +265,9 @@ def use_model(ai_filter_num, coin_df, code):
     try:
         folder_name = 'models'
         model_fname = f"""{folder_name}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
-    _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
-    _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
-    _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
+_units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
+_learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
+_loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
 
         model = load_model(model_fname)
     except Exception:
