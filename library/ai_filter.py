@@ -1,14 +1,34 @@
 import numpy as np
+import os
+from pathlib import Path
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, \
+    CustomCallback
 from library.graphs import plot_model_fit_history
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
-def train_model(ai_filter_num, df, code):
+# from tensorflow.train import latest_checkpoint
+
+def get_last_epoch_from_checkpoint():
+    dir_name = 'checkpoint'
+    cwd = Path.cwd() / dir_name
+    files = list(cwd.glob('*'))
+    for file in files:
+        if 'checkpoint\\checkpoint' in str(file):
+            text = file.read_text()
+            file_name = text.split('"')[1]
+            code = file_name.split('_')[0]
+            epoch = int(text.split(".ckpt")[0].split("--")[1])
+
+            return code, epoch, file_name
+    return False
+
+
+def train_model(ai_filter_num, df, code, unit):
     if ai_filter_num == 1001:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 400,
@@ -21,7 +41,7 @@ def train_model(ai_filter_num, df, code):
         }
     elif ai_filter_num == 1002:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 400,
@@ -34,7 +54,7 @@ def train_model(ai_filter_num, df, code):
         }
     elif ai_filter_num == 1003:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 200,
@@ -47,7 +67,7 @@ def train_model(ai_filter_num, df, code):
         }
     elif ai_filter_num == 1004:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 400,
@@ -60,7 +80,7 @@ def train_model(ai_filter_num, df, code):
         }
     elif ai_filter_num == 1:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -71,9 +91,9 @@ def train_model(ai_filter_num, df, code):
             "activation": "sigmoid",
             "is_continuously_train": False
         }
-    elif ai_filter_num == 2:
+    elif ai_filter_num == 2:    # loss is nan
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -86,7 +106,7 @@ def train_model(ai_filter_num, df, code):
         }
     elif ai_filter_num == 999:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 10,
@@ -106,6 +126,8 @@ def train_model(ai_filter_num, df, code):
     if len(coin_df) < 10000:
         print(f"테스트 데이터가 적어 학습 제외")
         exit(1)
+    # else:  # delete (테스트용)
+    #     coin_df = coin_df[:1000]
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
@@ -201,7 +223,7 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
     y_pred = np.argmax(predicted, axis=1)
     Y_test = np.argmax(y_test, axis=1)
 
-    back_testing(code, test_sample_df, y_pred, ai_settings, history)
+    back_testing(code, test_sample_df, y_pred, ai_settings, history, acc)
 
     # 모델 리턴해서 내일 오른다는 예측이 있을 경우 매수 떨어지면 매도
     if y_pred[-1] == 1:
@@ -210,10 +232,10 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         return True
 
 
-def use_model(ai_filter_num, coin_df, code):
+def use_model(ai_filter_num, coin_df, code, unit):
     if ai_filter_num == 1001:
         ai_settings = {
-            "table": "min1",
+            "table": f"min{unit}",
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
