@@ -17,26 +17,16 @@ from library.logging_pack import *
 
 
 class CustomCallback(Callback):
-    def on_train_begin(self, logs=None):
-        keys = list(logs.keys())
-        print("Starting training; got log keys: {}".format(keys))
-
-    # def on_train_end(self, logs=None):
-    #     keys = list(logs.keys())
-    #     print("Stop training; got log keys: {}".format(keys))
-    #
-    # def on_epoch_begin(self, epoch, logs=None):
-    #     keys = list(logs.keys())
-    #     print("Start epoch {} of training; got log keys: {}".format(epoch, keys))
-
     def on_epoch_end(self, epoch, logs=None):
+        logger.debug(f"End epoch {epoch} of training;")
         keys = list(logs.keys())
-        logger.debug(f"End epoch {epoch} of training; got log keys: {keys}")
-        # epoch 10마다 model 저장
-        if epoch % 10 == 0 and epoch != 0:
-            folder_name = 'checkpoint'
-            model_fname = f"""{folder_name}/model_{epoch}_of_{self.params['epochs']}.h5"""
-            self.model.save(model_fname)
+        train_logs = []
+        for key in keys:
+            train_logs.append(logs[f"{key}"])
+        # logs에 None 값이 포함되어 있으면 학습 종료
+        if None in train_logs:
+            logger.debug(f"{train_logs}에 None 값이 존재하여 학습 종료")
+            self.model.stop_training = True
 
 
 def back_testing(code, test_sample_df, y_pred, ai_settings, history, acc):
