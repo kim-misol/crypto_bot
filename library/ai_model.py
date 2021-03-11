@@ -108,56 +108,6 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.txt"""
     f.close()
 
 
-def _back_testing(code, test_sample_df, y_pred):
-    # 3단계
-    lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
-    t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
-    lstm_book_df = lstm_book_df.join(t1, how='left')
-    lstm_book_df.fillna(0, inplace=True)
-    lstm_book_df['ret'] = lstm_book_df['close'].pct_change()
-    lstm_book_df['lstm_ret'] = lstm_book_df['next_rtn'] * lstm_book_df['position'].shift(1)
-    lstm_book_df['lstm_cumret'] = (lstm_book_df['lstm_ret'] + 1).cumprod()
-    lstm_book_df['bm_cumret'] = (lstm_book_df['ret'] + 1).cumprod()
-
-    lstm_book_df[['lstm_cumret', 'bm_cumret']].plot()
-
-    # Backtesting
-    historical_max = lstm_book_df['close'].cummax()
-    daily_drawdown = lstm_book_df['close'] / historical_max - 1.0
-    historical_dd = daily_drawdown.cummin()
-    historical_dd.plot()
-
-    # BM 바이앤홀드
-    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'bm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
-    Sharpe = np.mean(lstm_book_df['ret']) / np.std(lstm_book_df['ret']) * np.sqrt(252.)
-    VOL = np.std(lstm_book_df['ret']) * np.sqrt(252.)
-    MDD = historical_dd.min()
-    bm_text = f"""[BM Buy and Hold]\n
-CAGR : {round(CAGR * 100, 2)}%
-Sharpe : {round(Sharpe, 2)}
-VOL : {round(VOL * 100, 2)}%
-MDD : {round(-1 * MDD * 100, 2)}%"""
-    print(bm_text)
-
-    # LSTM
-    CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
-    Sharpe = np.mean(lstm_book_df['lstm_ret']) / np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
-    VOL = np.std(lstm_book_df['lstm_ret']) * np.sqrt(252.)
-    MDD = historical_dd.min()
-    lstm_text = f"""[LSTM]\n
-CAGR : {round(CAGR * 100, 2)}%
-Sharpe : {round(Sharpe, 2)}
-VOL : {round(VOL * 100, 2)}%
-MDD : {round(-1 * MDD * 100, 2)}%\n"""
-    print(lstm_text)
-
-    fcode = code.replace('/', '-')
-    f = open(f"history-{fcode}.txt", 'w')
-    data = f"{bm_text}\n\n{lstm_text}"
-    f.write(data)
-    f.close()
-
-
 def plot_train_test(train_sample_df, test_sample_df):
     plt.figure(figsize=(16, 5))
     ax = plt.subplot(1, 2, 1)
