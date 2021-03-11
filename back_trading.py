@@ -142,8 +142,7 @@ def run_unit_list():
                         label = use_model(coin_df, code)
             else:
                 logger.debug('데이터에 결측치가 존재합니다.')
-
-        logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+            logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
     logger.debug(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
 
 
