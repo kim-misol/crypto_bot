@@ -271,6 +271,7 @@ def get_ai_settings(ai_filter_num, min_unit):
             "is_continuously_train": False
         }
     # step 5 units 200 epoch 50 batch 64
+    # 코인 10분에서 정확도 1위
     elif ai_filter_num == 120:
         ai_settings = {
             "table": f"min{min_unit}",
@@ -490,6 +491,20 @@ def get_ai_settings(ai_filter_num, min_unit):
             "optimizer": "adam",
             "loss": "binary_crossentropy",
             "activation": "softplus",
+            "is_continuously_train": False
+        }
+    # epoch 400
+    elif ai_filter_num == 137:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 400,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
             "is_continuously_train": False
         }
     # 테스트용 1
