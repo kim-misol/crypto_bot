@@ -13,6 +13,7 @@ from tensorflow.keras.utils import to_categorical
 import statistics
 
 from tensorflow.keras.callbacks import Callback
+from library.logging_pack import *
 
 
 class CustomCallback(Callback):
@@ -30,7 +31,7 @@ class CustomCallback(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         keys = list(logs.keys())
-        print(f"End epoch {epoch} of training; got log keys: {keys}")
+        logger.debug(f"End epoch {epoch} of training; got log keys: {keys}")
         # epoch 10마다 model 저장
         if epoch % 10 == 0 and epoch != 0:
             folder_name = 'checkpoint'
@@ -67,7 +68,6 @@ CAGR : {round(CAGR * 100, 2)}%
 Sharpe : {round(Sharpe, 2)}
 VOL : {round(VOL * 100, 2)}%
 MDD : {round(-1 * MDD * 100, 2)}%"""
-    print(bm_text)
 
     # LSTM
     CAGR = lstm_book_df.loc[lstm_book_df.index[-1], 'lstm_cumret'] ** (252. / len(lstm_book_df.index)) - 1
@@ -102,7 +102,6 @@ MAX:
 MIN: 
 {min(history.history['val_accuracy'])}
 {history.history['val_accuracy']}\n"""
-    print(lstm_text)
 
     fcode = code.replace('/', '-')
     # f = open(f"history/{fcode}.txt", 'w')
@@ -112,6 +111,7 @@ _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.txt"""
     data = f"{bm_text}\n\n{lstm_text}\n\n모델 정확도:\n{float(acc)*100}%\n{ai_settings}"
+    logger.debug(lstm_text)
     encoded_data = data.encode("utf8")
     f = open(f"{fname}", 'wb')
     f.write(encoded_data)

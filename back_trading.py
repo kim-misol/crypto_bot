@@ -8,6 +8,7 @@ from data.code_list import coin_codes
 from library.trading_indicators import bollinger_band
 from library.ai_filter import train_model, use_model
 from library.db_conn import get_min_candle
+from library.logging_pack import *
 
 
 def data_settings(market, unit):
@@ -67,7 +68,7 @@ def run():
     else:
         market = code
 
-    print(f"종목 코드: {code} {market_id}")
+    logger.debug(f"종목 코드: {code} {market_id}")
     simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
@@ -93,11 +94,11 @@ def run():
         if use_graph:
             save_graph(coin_df, code)
     else:
-        print('데이터에 결측치가 존재합니다.')
+        logger.debug('데이터에 결측치가 존재합니다.')
 
-    total_rate = sum_rate / len(code_list)
-    # print(f"총 수익: {total_profit}\n수익률: {total_rate}")
-    print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+    # total_rate = sum_rate / len(code_list)
+    # logger.debug(f"총 수익: {total_profit}\n수익률: {total_rate}")
+    logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
 
 
 def run_unit_list():

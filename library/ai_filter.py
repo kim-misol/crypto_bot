@@ -5,8 +5,9 @@ from library.graphs import plot_model_fit_history
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 # from tensorflow.train import latest_checkpoint
 
-from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing
+from library.ai_model import data_split, min_max_normal, create_dataset_binary, create_model, back_testing, CustomCallback
 from library.ai_setting_list import get_ai_settings
+from library.logging_pack import *
 
 
 def get_last_epoch_from_checkpoint():
@@ -24,12 +25,12 @@ def get_last_epoch_from_checkpoint():
     return False
 
 
-def train_model(ai_filter_num, df, code, unit):
-    get_ai_settings(ai_filter_num, unit)
+def train_model(ai_filter_num, df, code, min_unit):
+    ai_settings = get_ai_settings(ai_filter_num, min_unit)
     coin_df = df.copy()
     # 데이터가 10000개(10000일 or 10000분)가 넘지 않으면 예측도가 떨어지기 때문에 학습하지 않는다
     if len(coin_df) < 10000:
-        print(f"테스트 데이터가 적어 학습 제외")
+        logger.debug(f"테스트 데이터가 적어 학습 제외")
         exit(1)
 
     coin_df['next_rtn'] = coin_df['close'] / coin_df['open'] - 1
@@ -87,12 +88,13 @@ def train_model(ai_filter_num, df, code, unit):
     cp_code, cp_epoch, cp_file_name = get_last_epoch_from_checkpoint()
 
     # 가중치 복원
-    if code == cp_code and 'y' == input(f"가중치 복원 여부: (y or n)"):
+    # if code == cp_code and 'y' == input(f"가중치 복원 여부: (y or n)"):
+    if code == cp_code and False:
         try:
             model.load_weights(f"checkpoint/{cp_file_name}")
-            print(ai_settings['epochs'], cp_epoch)
+            logger.debug(ai_settings['epochs'], cp_epoch)
             loss, acc = model.evaluate(x_test, y_test, verbose=0)
-            print(f"{cp_file_name}\n불러온 모델 정확도: {float(acc) * 100}%")
+            logger.debug(f"{cp_file_name}\n불러온 모델 정확도: {float(acc) * 100}%")
         except Exception:
             # checkpoint 파일을 수동으로 삭제한 경우
             # 수동을 가중치 저장
@@ -110,7 +112,7 @@ def train_model(ai_filter_num, df, code, unit):
 
     # model 평가
     loss, acc = model.evaluate(x_test, y_test, verbose=0)
-    print(f"모델 정확도: {float(acc) * 100}%")
+    logger.debug(f"모델 정확도: {float(acc) * 100}%")
     # fig = plot_model_fit_history(code, history, ai_settings['epochs'])
     # fig.show()
 
@@ -150,7 +152,7 @@ def use_model(ai_filter_num, coin_df, code, unit):
             "is_continuously_train": False
         }
     else:
-        print("ai_filter_num 설정 오류")
+        logger.debug("ai_filter_num 설정 오류")
         exit(1)
 
     # test 데이터의 사이즈가 클 경우 예측률 하락
