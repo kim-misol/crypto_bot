@@ -145,5 +145,3 @@ cython_debug/
 img/
 .idea/
 Database/
-
-db_conn.py
