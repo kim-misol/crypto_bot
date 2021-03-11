@@ -1,13 +1,28 @@
+"""
+num_unit : RNN(LSTM) 신경망에 존재하는 뉴런의 개수
+epoch : 반복 학습 횟수
+batch_size : 데이터셋을 나눠서 학습 (64~512가 대표적, 컴퓨터 메모리가 배치되어 있는 방식과 연관되어 2의 지수값을 가질 때 더 빨리 학습가능하다.)
+learning_rate : 학습 속도 감쇠법
+optimizer : 최적화 방식
+loss : 손실함수
+activation : 활성화 함수 설정합니다.
+    - ‘linear’ : 디폴트 값, 입력뉴런과 가중치로 계산된 결과값이 그대로 출력으로 나옵니다.
+    - ‘relu’ : rectifier 함수, 은익층에 주로 쓰입니다.
+    - ‘sigmoid’ : 시그모이드 함수, 이진 분류 문제에서 출력층에 주로 쓰입니다.
+    - ‘softmax’ : 소프트맥스 함수, 다중 클래스 분류 문제에서 출력층에 주로 쓰입니다.
+"""
+
 def get_ai_settings(ai_filter_num, min_unit):
     # step 5 units 200 epoch 50 batch 10
     if ai_filter_num == 1:
         ai_settings = {
             "table": f"min{min_unit}",
             "num_step": 5,
-            "num_units": 200,   # RNN(LSTM) 신경망에 존재하는 뉴런의 개수
-            "epochs": 50,       # 반복 학습 횟수
-            "learning_rate": 0.001,     # 학습 속도 감쇠법
-            "optimizer": "adam",        # 최적화 방식
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 10,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
             "loss": "categorical_crossentropy",
             "activation": "sigmoid",
             "is_continuously_train": False
