@@ -46,8 +46,8 @@ def save_graph(coin_df, code):
 
 def run():
     # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
-    code_list = coin_codes
-    total_profit, sum_rate = 0, 0
+    # code_list = coin_codes
+    # total_profit, sum_rate = 0, 0
     # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") == 'y' else False
     use_graph = False
     # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
@@ -111,41 +111,40 @@ def run_unit_list():
     else:
         market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
 
-    # units = [1, 3, 5, 10, 15, 30, 60, 240]
-    units = [60, 30, 15, 10, 5, 3, 1]
-
-    for unit in units:
-        if unit in (1, 3):
+    # units = [60, 30, 15, 10, 5, 3, 1]
+    min_units = [10]
+    # ai_list = list(range(103, 119))
+    ai_list = list(range(120, 137))
+    use_ai_filter = True
+    train_ai_model = True
+    # ai_filter_num = 101  # 116 101
+    # UNIT 3의 ai_filter_num 101 돌려야됨됨 102는 돌리는 중    # unit 별 모델 트레이닝
+    for min_unit in min_units:
+        if min_unit in (1, 3):
             market = market_id
         else:
             market = code
+        # ai setting 별 모델 트레이닝
+        for ai_filter_num in ai_list:
+            logger.debug(f"종목 코드: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num}")
+            simul_start = datetime.now()
+            # 종목별 데이터
+            # $ 백테스팅 시작 날짜 설정
+            coin_df = data_settings(market=market, unit=min_unit)
 
-        print(f"종목 코드: {code} {market_id} unit:{unit}")
-        simul_start = datetime.now()
-        # 종목별 데이터
-        # $ 백테스팅 시작 날짜 설정
-        coin_df = data_settings(market=market, unit=unit)
+            if coin_df is not False:
+                # ai model 학습 또는 사용
+                label = 1  # 1: 산다
+                if use_ai_filter:
+                    if train_ai_model:
+                        label = train_model(ai_filter_num, coin_df, code, min_unit)
+                    else:
+                        label = use_model(coin_df, code)
+            else:
+                logger.debug('데이터에 결측치가 존재합니다.')
 
-        if coin_df is not False:
-            # ai model 학습 또는 사용
-            # use_ai_filter = True if input(f"AI 필터 사용 여부 : (y or n) ") == 'y' else False
-            # train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
-            use_ai_filter = True
-            train_ai_model = True
-            ai_filter_num = 116
-
-            label = 1  # 1: 산다
-            if use_ai_filter:
-                if train_ai_model:
-                    label = train_model(ai_filter_num, coin_df, code, unit)
-                else:
-                    label = use_model(coin_df, code)
-        else:
-            print('데이터에 결측치가 존재합니다.')
-
-        print(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
-
-    print(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+        logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+    logger.debug(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
 
 
 if __name__ == "__main__":
