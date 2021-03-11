@@ -13,7 +13,6 @@ from library.ai_model import data_split, min_max_normal, create_dataset_binary
 def save_hyperparams_n_results_from_history():
     dir_name = 'history'
     cwd = Path.cwd() / dir_name
-    print(cwd)
     files = list(cwd.glob('*'))
     print(files)
     df = pd.DataFrame(columns=['market', 'code', 'model_fname', 'start_date', 'train_val_train', 'table_unit',
@@ -148,12 +147,9 @@ def save_hyperparams_n_results_from_model():
 # train log에서 val_accuracy 리스트로 만들어서 예측률 비교
 def get_val_accuracy():
     dir_name = 'train_log'
-    param = '001'
 
     cwd = Path.cwd() / dir_name
-    print(cwd)
     files = list(cwd.glob('*'))
-    print(files)
 
     # 특정 종목의 모델 학습 변수 별 예측률 비교
     for file in files:
