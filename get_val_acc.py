@@ -168,6 +168,31 @@ def get_val_accuracy():
         print(round(sum(val_acc_list) / len(val_acc_list), 4))
 
 
+def edit_history():
+    dir_name = 'history'
+    from_text = "0.001"
+    to_text = "0.01"
+
+    cwd = Path.cwd() / dir_name
+    files = list(cwd.glob('*'))
+
+    for file in files:
+        try:
+            text = open(file, 'rt', encoding='UTF8').read()
+        except Exception:
+            text = file.read_text()
+
+        try:
+            text = text.replace(from_text, to_text)
+            encoded_data = text.encode("utf8")
+            f = open(file, 'wb')
+            f.write(encoded_data)
+            f.close()
+        except Exception:
+            print(file)
+            print(text)
+
+
 def change_filename():
     import os
     files = path_setting()
@@ -175,7 +200,8 @@ def change_filename():
     for file in files:
         fname = str(file)
         # new_fname = fname.replace('model_', '')
-        new_fname = fname.replace('__', '_')
+        # new_fname = fname.replace('__', '_')
+        new_fname = fname.replace('001', '01')
         # new_fname = fname.replace('epoch', 'epoch_')
         # new_fname = new_fname.replace('nstep', 'nstep_')
         # new_fname = new_fname.replace('units', 'units_')
@@ -204,5 +230,7 @@ if __name__ == "__main__":
     # save_hyperparams_n_results_from_history()
     # 파일명 변경
     # change_filename()
+    # history 파일 수정
+    # edit_history()
     # + model 정확도 추가
     save_hyperparams_n_results_from_model()

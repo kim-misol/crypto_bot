@@ -137,15 +137,15 @@ def create_model(x_train, ai_settings):
     input_layer = Input(batch_shape=(None, x_train.shape[1], x_train.shape[2]))
     # 다층 구조로 LSTM 층 위에 LSTM 층이 연결: LSTM(input)(input_layer)
     # return_sequences=True 이전 layer의 출력이 다음 layer의 입력으로 전달
-    layer_lstm_1 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(input_layer)
+    layer_lstm_1 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(ai_settings['learning_rate']))(input_layer)
     layer_lstm_1 = BatchNormalization()(layer_lstm_1)  # 배치정규화층을 이어준다
-    layer_lstm_2 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_1)
+    layer_lstm_2 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(ai_settings['learning_rate']))(layer_lstm_1)
     layer_lstm_2 = Dropout(0.25)(layer_lstm_2)  # 드롭아웃하여 임의의 확률로 가중치 선을 삭제 - 과적합 방지
-    layer_lstm_3 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_2)
+    layer_lstm_3 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(ai_settings['learning_rate']))(layer_lstm_2)
     layer_lstm_3 = BatchNormalization()(layer_lstm_3)
-    layer_lstm_4 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_3)
+    layer_lstm_4 = LSTM(ai_settings['num_units'], return_sequences=True, recurrent_regularizer=regularizers.l2(ai_settings['learning_rate']))(layer_lstm_3)
     layer_lstm_4 = Dropout(0.25)(layer_lstm_4)
-    layer_lstm_5 = LSTM(ai_settings['num_units'], recurrent_regularizer=regularizers.l2(0.01))(layer_lstm_4)
+    layer_lstm_5 = LSTM(ai_settings['num_units'], recurrent_regularizer=regularizers.l2(ai_settings['learning_rate']))(layer_lstm_4)
     layer_lstm_5 = BatchNormalization()(layer_lstm_5)
     output_layer = Dense(2, activation=ai_settings['activation'])(layer_lstm_5)
     '''
