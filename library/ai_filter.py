@@ -67,20 +67,20 @@ def train_model(ai_filter_num, df, code, min_unit):
     # 훈련 중간 중간 현재 Parameter의 값들을 저장
     checkpoint_path = "checkpoint/" + code + "_cp--{epoch:04d}.ckpt"
     # checkpoint_dir = os.path.dirname(checkpoint_path)
-    # print(f"checkpoint_dir: {checkpoint_dir}") # checkpoint
     # keras 에서 제공하는 callback함수는 모델 훈련과정을 제어
     callback_list = [
-        EarlyStopping(  # 성능 향상이 멈추면 훈련을 중지
-            monitor='val_accuracy',  # 모델 검증 정확도를 모니터링
-            patience=25,  # 1 + 에포크 (즉, 26에포크 동안 정확도가 향상되지 않으면 훈련 중지
+        EarlyStopping(                  # 성능 향상이 멈추면 훈련을 중지
+            monitor='val_accuracy',     # 모델 검증 정확도를 모니터링
+            patience=25,                # 1 + 에포크 (즉, 26에포크 동안 정확도가 향상되지 않으면 훈련 중지
             restore_best_weights=True
         ),
-        ModelCheckpoint(  # 텐서플로 체크포인트 파일을 만들고 에포크가 종료될 때마다 업데이트 (에포크마다 가중치를 저장)
-            filepath=checkpoint_path,  # 모델 파일 경로
-            # monitor='val_loss',           # val_loss 가 좋아지지 않으면 모델 파일을 덮어쓰지 않음.
+        ModelCheckpoint(                # 텐서플로 체크포인트 파일을 만들고 에포크가 종료될 때마다 업데이트 (에포크마다 가중치를 저장)
+            filepath=checkpoint_path,   # 모델 파일 경로
+            # monitor='val_loss',       # val_loss 가 좋아지지 않으면 모델 파일을 덮어쓰지 않음.
             save_best_only=True,
             verbose=1
-        )
+        ),
+        CustomCallback()
     ]
 
     # model 생성
