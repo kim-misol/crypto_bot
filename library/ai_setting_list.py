@@ -6,7 +6,6 @@ def get_ai_settings(ai_filter_num, min_unit):
             "num_step": 5,
             "num_units": 200,   # RNN(LSTM) 신경망에 존재하는 뉴런의 개수
             "epochs": 50,       # 반복 학습 횟수
-            "batch_size": 10,   # 데이터셋을 나눠서 학습 (64~512가 대표적, 컴퓨터 메모리가 배치되어 있는 방식과 연관되어 2의 지수값을 가질 때 더 빨리 학습가능하다.)
             "learning_rate": 0.001,     # 학습 속도 감쇠법
             "optimizer": "adam",        # 최적화 방식
             "loss": "categorical_crossentropy",
