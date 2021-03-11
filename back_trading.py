@@ -1,14 +1,13 @@
-import os
 from datetime import datetime
 
 import numpy as np
 
-from library.graphs import draw_candle_with_indicator
 from data.code_list import coin_codes
-from library.trading_indicators import bollinger_band
 from library.ai_filter import train_model, use_model
 from library.db_conn import get_min_candle
+from library.graphs import draw_candle_with_indicator
 from library.logging_pack import *
+from library.trading_indicators import bollinger_band
 
 
 def data_settings(market, unit):
