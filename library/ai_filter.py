@@ -87,8 +87,9 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
             ModelCheckpoint(                # 텐서플로 체크포인트 파일을 만들고 에포크가 종료될 때마다 업데이트 (에포크마다 가중치를 저장)
                 filepath=checkpoint_path,   # 모델 파일 경로
                 # monitor='val_loss',       # val_loss 가 좋아지지 않으면 모델 파일을 덮어쓰지 않음.
-                save_best_only=True,
-                verbose=1
+                # save_best_only=True,
+                verbose=1,
+                save_weights_only=True
             ),
             CustomCallback()
         ]
