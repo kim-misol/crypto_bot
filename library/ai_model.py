@@ -161,14 +161,16 @@ def create_model(x_train, ai_settings):
     return model
 
 
-def create_dataset_binary(data, feature_list, ai_settings, n):
+def create_dataset_binary(data, feature_list, ai_settings, n_feature):
     '''
     다음날 시종가 수익률 라벨링.
     '''
     # LSTM 모델에 넣을 변수 데이터 선택
-    train_xdata = np.array(data[feature_list[0:n]])
-    # 마지막 단계
+    train_xdata = np.array(data[feature_list[0:n_feature]])
+    # 레이블링 데이터를 만든다, next_rtn 값
+    train_ydata = np.array(data[[feature_list[n_feature]]])
     step = ai_settings['num_step']
+    # 마지막 단계
     m = np.arange(len(train_xdata) - step)
     x, y = [], []
     for i in m:
@@ -177,10 +179,8 @@ def create_dataset_binary(data, feature_list, ai_settings, n):
         x.append(a)
     # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
     # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
-    x_batch = np.reshape(np.array(x), (len(m), step, n))
+    x_batch = np.reshape(np.array(x), (len(m), step, n_feature))
 
-    # 레이블링 데이터를 만든다.
-    train_ydata = np.array(data[[feature_list[n]]])  # next_rtn 값
     for i in m + step:
         # 이진 분류르 하기 위한 next_rtn
         next_rtn = train_ydata[i][0]

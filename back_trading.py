@@ -101,24 +101,17 @@ def run():
 
 
 def run_unit_list():
-    # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
     code = 'KRW-BTC'
-    if code == 'KRW-BTC':
-        market_id = 1
-    elif code == 'KRW-LTC':
-        market_id = 44
-    else:
-        market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+    market_id = 1
 
+    # model 학습 시 이용되는 sample data 시작 날짜 설정
+    date_start = '2020'
     # units = [60, 30, 15, 10, 5, 3, 1]
-    min_units = [10]
-    # ai_list = list(range(103, 119))
-    ai_list = list(range(120, 137))
-    use_ai_filter = True
-    train_ai_model = True
-    # ai_filter_num = 101  # 116 101
-    # UNIT 3의 ai_filter_num 101 돌려야됨됨 102는 돌리는 중    # unit 별 모델 트레이닝
-    for min_unit in min_units:
+    min_unit_list = [10]
+    # ai_list = list(range(101, 119))
+    ai_list = list(range(126, 138)) + list(range(1101, 1136))
+    # UNIT 3의 ai_filter_num 101 돌려야됨  # unit 별 모델 트레이닝
+    for min_unit in min_unit_list:
         if min_unit in (1, 3):
             market = market_id
         else:
@@ -127,24 +120,52 @@ def run_unit_list():
         for ai_filter_num in ai_list:
             logger.debug(f"종목 코드: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num}")
             simul_start = datetime.now()
-            # 종목별 데이터
-            # $ 백테스팅 시작 날짜 설정
-            coin_df = data_settings(market=market, unit=min_unit)
+            # 종목별 데이터, 백테스팅 시작 날짜 설정
+            coin_df = data_settings(market=market, unit=min_unit, date_start=date_start)
 
             if coin_df is not False:
                 # ai model 학습 또는 사용
-                label = 1  # 1: 산다
-                if use_ai_filter:
-                    if train_ai_model:
-                        label = train_model(ai_filter_num, coin_df, code, min_unit)
-                    else:
-                        label = use_model(coin_df, code)
+                label = train_model(ai_filter_num, coin_df, code, min_unit, date_start)
             else:
                 logger.debug('데이터에 결측치가 존재합니다.')
             logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
     logger.debug(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
 
 
+def run_start_unit_list():
+    # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    code = 'KRW-BTC'
+    market_id = 1
+    # model 학습 시 이용되는 sample data 시작 날짜 설정
+    date_start_list = ['2020', '2019', '2018']
+    min_unit_list = [1, 3, 5]
+    ai_list = list(range(10001, 10003))
+
+    # 데이터 시작 날짜별 트레이닝
+    for date_start in date_start_list:
+        # unit 별 모델 트레이닝
+        for min_unit in min_unit_list:
+            if min_unit in (1, 3):
+                market = market_id
+            else:
+                market = code
+            # ai setting 별 모델 트레이닝
+            for ai_filter_num in ai_list:
+                logger.debug(f"종목 코드: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num}")
+                simul_start = datetime.now()
+                # 종목별 데이터, 백테스팅 시작 날짜 설정
+                coin_df = data_settings(market=market, unit=min_unit, date_start=date_start)
+
+                if coin_df is not False:
+                    # ai model 학습 또는 사용
+                    label = train_model(ai_filter_num, coin_df, code, min_unit, date_start)
+                else:
+                    logger.debug('데이터에 결측치가 존재합니다.')
+                logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+    logger.debug(f"최종 시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
+
+
 if __name__ == "__main__":
     # run()
-    run_unit_list()
+    # run_unit_list()
+    run_start_unit_list()

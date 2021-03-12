@@ -72,7 +72,8 @@ def get_test_data(coin_df, ai):
 
 
 def save_hyperparams_n_results_from_model():
-    dir_name = 'history'
+    date_start = 2020
+    dir_name = f'history/{date_start}'
     cwd = Path.cwd() / dir_name
     files = list(cwd.glob('*'))
     df = pd.DataFrame(
@@ -118,7 +119,7 @@ def save_hyperparams_n_results_from_model():
                 else:
                     market = code
                 # 모델 정확도 평가를 위한 데이터 전처리
-                coin_df = data_settings(market=market, unit=unit)
+                coin_df = data_settings(market=market, unit=unit, date_start=date_start)
                 x_test, y_test = get_test_data(coin_df, ai)
 
                 # 모델 불러오기
@@ -211,8 +212,8 @@ def change_filename():
 
 
 def path_setting():
-    # dir_name = 'models'
-    dir_name = 'history'
+    dir_name = 'models'
+    # dir_name = 'history'
     cwd = Path.cwd() / dir_name
     print(cwd)
     files = list(cwd.glob('*'))
