@@ -191,7 +191,7 @@ def use_model(ai_filter_num, coin_df, code, unit):
     from tensorflow.keras.models import load_model
     try:
         folder_name = 'models'
-        model_fname = f"""{folder_name}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+        model_fname = f"""{folder_name}/{date_start}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
@@ -199,7 +199,7 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         model = load_model(model_fname)
     except Exception:
         # 저장된 모델이 없는 경우 학습
-        filtered = train_model(ai_filter_num, coin_df, code)
+        filtered = train_model(ai_filter_num, coin_df, code, date_start)
 
     # 예측
     predicted = model.predict(x_test)

@@ -29,7 +29,7 @@ class CustomCallback(Callback):
             self.model.stop_training = True
 
 
-def back_testing(code, test_sample_df, y_pred, ai_settings, history, acc):
+def back_testing(code, test_sample_df, y_pred, ai_settings, history, acc, date_start):
     # 3단계
     lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
     t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
@@ -95,7 +95,7 @@ MIN:
 
     fcode = code.replace('/', '-')
     # f = open(f"history/{fcode}.txt", 'w')
-    folder_name = 'history'
+    folder_name = f'history/{date_start}'
     fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\

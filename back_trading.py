@@ -10,8 +10,8 @@ from library.logging_pack import *
 from library.trading_indicators import bollinger_band
 
 
-def data_settings(market, unit):
-    price_df = get_min_candle(market=market, unit=unit)
+def data_settings(market, unit, date_start):
+    price_df = get_min_candle(market=market, unit=unit, date_start=date_start)
     # 결측치 존재 유무 확인
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
@@ -71,7 +71,7 @@ def run():
     simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
-    coin_df = data_settings(market=market, unit=unit)
+    coin_df = data_settings(market=market, unit=unit, date_start='2020')
 
     if coin_df is not False:
         # ai model 학습 또는 사용
