@@ -141,7 +141,9 @@ dmypy.json
 cython_debug/
 
 # Add
-#info/
-img/
 .idea/
+img/
 Database/
+history/
+models/
+train_log/
