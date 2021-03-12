@@ -745,7 +745,256 @@ def get_ai_settings(ai_filter_num, min_unit):
             "activation": "softplus",
             "is_continuously_train": False
         }
+    # step 5 units 200 epoch 50 batch 64 learning_rate 0.001
+    elif ai_filter_num == 1119:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1120:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "softmax",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1121:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "tanh",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1122:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "softsign",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1123:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "softplus",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1124:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1125:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "softmax",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1126:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "tanh",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1127:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "relu",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1128:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "softsign",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1129:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "mse",
+            "activation": "softplus",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1130:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1131:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "softmax",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1132:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "tanh",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1133:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "relu",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1134:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "softsign",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 1135:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 64,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "softplus",
+            "is_continuously_train": False
+        }
 
+    # 위의 테스트로 얻은 조합
+    elif ai_filter_num == 10001:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 50,
+            "epochs": 50,
+            "batch_size": 32,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    elif ai_filter_num == 10002:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "num_step": 5,
+            "num_units": 50,
+            "epochs": 50,
+            "batch_size": 32,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "binary_crossentropy",
+            "activation": "relu",
+            "is_continuously_train": False
+        }
     # 테스트용 1
     elif ai_filter_num == 999:
         ai_settings = {
