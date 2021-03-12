@@ -148,3 +148,5 @@ history/
 models/
 train_log/
 checkpoint/
+
+# git update-index --assume-unchanged library/db_conn.py
