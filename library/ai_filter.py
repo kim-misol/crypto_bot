@@ -35,6 +35,7 @@ _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         model = load_model(model_fname)
+        return True
     except Exception:
         # 모델이 존재하지 않는 경우에만 학습
         coin_df = df.copy()
@@ -125,9 +126,9 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         # model 저장
         folder_name = 'models'
         model_fname = f"""{folder_name}/{date_start}/{code}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
-    _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
-    _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
-    _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
+_units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
+_learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
+_loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         model.save(model_fname)
         # 내일 오를지 내릴지에 대한 label 예측 값 출력
         predicted = model.predict(x_test)
