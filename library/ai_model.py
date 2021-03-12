@@ -183,7 +183,12 @@ def create_dataset_binary(data, feature_list, ai_settings, n_feature):
 
     # n일 뒤 데이터 예측
     n_pred = ai_settings['n_pred'] - 1
-    for i in m[:-n_pred] + step:
+    if n_pred == 0:
+        label_len = m + step
+    else:
+        label_len = m[:-n_pred] + step
+
+    for i in label_len:
         # 이진 분류르 하기 위한 next_rtn
         next_rtn = train_ydata[i + n_pred][0]
         # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
@@ -198,7 +203,10 @@ def create_dataset_binary(data, feature_list, ai_settings, n_feature):
     y_batch = to_categorical(y_batch, 2)
 
     # x_batch와 y_batch 길이 맞추기
-    return x_batch[:-n_pred], y_batch
+    if n_pred == 0:
+        return x_batch, y_batch
+    else:
+        return x_batch[:-n_pred], y_batch
 
 
 def min_max_normal(tmp_df, all_features, feature4_list):
