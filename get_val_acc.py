@@ -77,10 +77,10 @@ def save_hyperparams_n_results_from_model():
     cwd = Path.cwd() / dir_name
     files = list(cwd.glob('*'))
     df = pd.DataFrame(
-        columns=['market', 'code', 'model_fname', "accuracy", 'start_date', 'train_val_train', 'table_unit',
-                 'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
-                 'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
-                 'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
+        columns=['market', 'code', 'model_fname', 'start_date', "accuracy", "n_pred", 'table_unit', 'epoch',
+                 'ntep', 'units', 'batch', 'learning_rate', 'optimizer', 'loss',
+                 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss', 'avg_val_acc', 'last_val_acc', 'max_val_acc',
+                 'min_val_acc', 'val_acc_list', 'train_val_train'])
 
     for file in files:
         fname = str(file).split('\\')[-1][:-4]
@@ -133,14 +133,14 @@ def save_hyperparams_n_results_from_model():
         print(f"{fname}: {accuracy}")
 
         c = pd.DataFrame(
-            [['crypto', code, fname, accuracy, "2020-01-01 01:00:00", "6:2:2", ai['table'], ai['epochs'],
-              ai['num_step'], ai['num_units'],
-              ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'], ai['activation'],
-              avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc, min_val_acc, val_acc_list]],
-            columns=['market', 'code', 'model_fname', "accuracy", 'start_date', 'train_val_train', 'table_unit',
-                     'epoch', 'ntep', 'units', 'batch', 'learning_rate', 'optimizer',
-                     'loss', 'activation', 'avg_loss', 'avg_acc', 'avg_val_loss',
-                     'avg_val_acc', 'last_val_acc', 'max_val_acc', 'min_val_acc', 'val_acc_list'])
+            [['crypto', code, fname, "2020-01-01 01:00:00", accuracy, ai['n_pred'], ai['table'], ai['epochs'],
+              ai['num_step'], ai['num_units'], ai['batch_size'], ai['learning_rate'], ai['optimizer'], ai['loss'],
+              ai['activation'], avg_loss, avg_acc, avg_val_loss, avg_val_acc, last_val_acc, max_val_acc,
+              min_val_acc, val_acc_list, "6:2:2"]],
+            columns=['market', 'code', 'model_fname', 'start_date', "accuracy", "n_pred", 'table_unit', 'epoch',
+                     'ntep', 'units', 'batch', 'learning_rate', 'optimizer', 'loss',
+                     'activation', 'avg_loss', 'avg_acc', 'avg_val_loss', 'avg_val_acc', 'last_val_acc', 'max_val_acc',
+                     'min_val_acc', 'val_acc_list', 'train_val_train'])
         df = df.append(c)
     df.to_excel(f"train_log/results_{str(datetime.now())[:16].replace(':', '_')}.xlsx")
 
