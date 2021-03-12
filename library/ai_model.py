@@ -30,8 +30,12 @@ class CustomCallback(Callback):
 
 
 def back_testing(code, test_sample_df, y_pred, ai_settings, history, acc, date_start):
-    # 3단계
-    lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
+    n_pred = ai_settings['n_pred'] - 1
+    if n_pred == 0:
+        lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
+    else:
+        lstm_book_df = test_sample_df[['close', 'next_rtn']][:-n_pred].copy()
+    # lstm_book_df = test_sample_df[['close', 'next_rtn']].copy()
     t1 = DataFrame(data=y_pred, columns=['position'], index=lstm_book_df.index[5:])
     lstm_book_df = lstm_book_df.join(t1, how='left')
     lstm_book_df.fillna(0, inplace=True)
