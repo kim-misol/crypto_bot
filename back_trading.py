@@ -60,7 +60,7 @@ def run():
         market_id = 44
     else:
         market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
-
+    date_start = '2020'
     unit = int(input(f"unit: (예시. 1: 1분봉, 3: 3분봉)"))
     if unit in (1, 3):
         market = market_id
@@ -71,7 +71,7 @@ def run():
     simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
-    coin_df = data_settings(market=market, unit=unit, date_start='2020')
+    coin_df = data_settings(market=market, unit=unit, date_start=date_start)
 
     if coin_df is not False:
         # ai model 학습 또는 사용
@@ -80,13 +80,13 @@ def run():
         use_ai_filter = True
         train_ai_model = True
         # ai_filter_num = 1001 1002 1003 1004
-        # ai_filter_num = 999
-        ai_filter_num = int(input(f"ai_filter_num 입력: "))
+        ai_filter_num = 999
+        # ai_filter_num = int(input(f"ai_filter_num 입력: "))
 
         label = 1  # 1: 산다
         if use_ai_filter:
             if train_ai_model:
-                label = train_model(ai_filter_num, coin_df, code, unit)
+                label = train_model(ai_filter_num, coin_df, code, unit, date_start)
             else:
                 label = use_model(coin_df, code)
 
@@ -151,7 +151,7 @@ def run_start_unit_list():
                 market = code
             # ai setting 별 모델 트레이닝
             for ai_filter_num in ai_list:
-                logger.debug(f"종목 코드: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num}")
+                logger.debug(f"종목: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num} {date_start}부터")
                 simul_start = datetime.now()
                 # 종목별 데이터, 백테스팅 시작 날짜 설정
                 coin_df = data_settings(market=market, unit=min_unit, date_start=date_start)
