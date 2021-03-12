@@ -147,3 +147,4 @@ Database/
 history/
 models/
 train_log/
+checkpoint/
