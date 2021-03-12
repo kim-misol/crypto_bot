@@ -8,6 +8,11 @@
 FinanceDataReader library에서 가상암호화폐의 데이터를 가져와서 
 가격 예측
 
+# Requirements
+
+- Python3.8
+- Postgresql
+
 # Installation
 1. Set Project Interpreter (I prefer to use virtual environment; it's required to set 64bit)
 2. Install required packages in requirements.txt  
