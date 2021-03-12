@@ -181,21 +181,24 @@ def create_dataset_binary(data, feature_list, ai_settings, n_feature):
     # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
     x_batch = np.reshape(np.array(x), (len(m), step, n_feature))
 
-    for i in m + step:
+    # n일 뒤 데이터 예측
+    n_pred = ai_settings['n_pred'] - 1
+    for i in m[:-n_pred] + step:
         # 이진 분류르 하기 위한 next_rtn
-        next_rtn = train_ydata[i][0]
+        next_rtn = train_ydata[i + n_pred][0]
         # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
         if next_rtn > 0:
             label = 1
         else:
             label = 0
-        # 임시로 생성된 레이블을 순차적으로 저장
+        # 순차적으로 임시로 생성된 레이블을 저장
         y.append(label)
     # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
     y_batch = np.reshape(np.array(y), (-1, 1))
     y_batch = to_categorical(y_batch, 2)
 
-    return x_batch, y_batch
+    # x_batch와 y_batch 길이 맞추기
+    return x_batch[:-n_pred], y_batch
 
 
 def min_max_normal(tmp_df, all_features, feature4_list):

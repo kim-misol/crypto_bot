@@ -12,11 +12,13 @@ activation : 활성화 함수 설정합니다.
     - ‘softmax’ : 소프트맥스 함수, 다중 클래스 분류 문제에서 출력층에 주로 쓰입니다.
 """
 
+
 def get_ai_settings(ai_filter_num, min_unit):
     # step 5 units 200 epoch 50 batch 10
     if ai_filter_num == 1:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -37,6 +39,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 101:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -50,6 +53,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 102:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -63,6 +67,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 103:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -77,6 +82,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 104:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -90,6 +96,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 105:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -103,6 +110,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 106:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -116,6 +124,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 107:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -129,6 +138,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 108:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -142,6 +152,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 109:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -155,6 +166,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 110:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -168,6 +180,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 111:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -181,6 +194,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 112:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -194,6 +208,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 113:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -207,6 +222,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 114:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -220,6 +236,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 115:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -234,6 +251,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 116:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -247,6 +265,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 117:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -260,6 +279,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 118:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -275,6 +295,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 120:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -288,6 +309,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 121:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -301,6 +323,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 122:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -314,6 +337,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 123:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -327,6 +351,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 124:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -340,6 +365,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 125:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -353,6 +379,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 126:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -366,6 +393,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 127:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -379,6 +407,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 128:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -392,6 +421,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 129:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -405,6 +435,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 130:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -418,6 +449,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 131:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -431,6 +463,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 132:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -444,6 +477,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 133:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -457,6 +491,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 134:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -470,6 +505,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 135:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -483,6 +519,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 136:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -493,10 +530,11 @@ def get_ai_settings(ai_filter_num, min_unit):
             "activation": "softplus",
             "is_continuously_train": False
         }
-    # epoch 400
+    # @ epoch 400
     elif ai_filter_num == 137:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 400,
@@ -507,11 +545,42 @@ def get_ai_settings(ai_filter_num, min_unit):
             "activation": "sigmoid",
             "is_continuously_train": False
         }
+    # @ 3xmin_unit 뒤 예측
+    elif ai_filter_num == 1001:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "n_pred": 3,
+            "num_step": 5,
+            "num_units": 200,
+            "epochs": 50,
+            "batch_size": 32,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
+    # @ 3xmin_unit 뒤 예측
+    elif ai_filter_num == 1002:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "n_pred": 3,
+            "num_step": 5,
+            "num_units": 50,
+            "epochs": 50,
+            "batch_size": 32,
+            "learning_rate": 0.001,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
+            "is_continuously_train": False
+        }
 
     # step 5 units 200 epoch 50 batch 32 learning_rate 0.001
     elif ai_filter_num == 1101:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -525,6 +594,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1102:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -538,6 +608,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1103:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -552,6 +623,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1104:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -565,6 +637,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1105:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -578,6 +651,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1106:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -591,6 +665,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1107:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -604,6 +679,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1108:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -617,6 +693,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1109:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -630,6 +707,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1110:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -643,6 +721,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1111:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -656,6 +735,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1112:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -669,6 +749,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1113:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -682,6 +763,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1114:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -695,6 +777,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1115:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -709,6 +792,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1116:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -722,6 +806,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1117:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -735,6 +820,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1118:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -749,6 +835,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1119:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -762,6 +849,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1120:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -775,6 +863,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1121:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -788,6 +877,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1122:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -801,6 +891,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1123:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -814,6 +905,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1124:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -827,6 +919,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1125:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -840,6 +933,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1126:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -853,6 +947,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1127:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -866,6 +961,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1128:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -879,6 +975,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1129:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -892,6 +989,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1130:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -905,6 +1003,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1131:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -918,6 +1017,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1132:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -931,6 +1031,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1133:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -944,6 +1045,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1134:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -957,6 +1059,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 1135:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
@@ -972,6 +1075,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 10001:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 50,
             "epochs": 50,
@@ -985,6 +1089,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 10002:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 50,
             "epochs": 50,
@@ -999,6 +1104,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 999:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 10,
@@ -1013,6 +1119,7 @@ def get_ai_settings(ai_filter_num, min_unit):
     elif ai_filter_num == 998:
         ai_settings = {
             "table": f"min{min_unit}",
+            "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
             "epochs": 50,
