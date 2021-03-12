@@ -30,8 +30,8 @@ def train_model(ai_filter_num, df, code, min_unit, date_start):
     ai_settings = get_ai_settings(ai_filter_num, min_unit)
     try:
         folder_name = 'models'
-        model_fname = f"""{folder_name}/{date_start}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
-_units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
+        model_fname = f"""{folder_name}/{date_start}/{code}_{ai_settings['table']}_n_pred_{ai_settings['n_pred']}\
+_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}_units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         model = load_model(model_fname)
@@ -125,7 +125,7 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
 
         # model 저장
         folder_name = 'models'
-        model_fname = f"""{folder_name}/{date_start}/{code}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+        model_fname = f"""{folder_name}/{date_start}/{code}_{ai_settings['table']}_n_pred_{ai_settings['n_pred']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
@@ -201,7 +201,7 @@ def use_model(ai_filter_num, coin_df, code, unit, date_start):
     from tensorflow.keras.models import load_model
     try:
         folder_name = 'models'
-        model_fname = f"""{folder_name}/{date_start}/{code}_model_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+        model_fname = f"""{folder_name}/{date_start}/{code}_{ai_settings['table']}_n_pred_{ai_settings['n_pred']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""

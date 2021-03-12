@@ -96,7 +96,7 @@ MIN:
     fcode = code.replace('/', '-')
     # f = open(f"history/{fcode}.txt", 'w')
     folder_name = f'history/{date_start}'
-    fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
+    fname = f"""{folder_name}/{fcode}_{ai_settings['table']}_n_pred_{ai_settings['n_pred']}_epoch_{ai_settings['epochs']}_nstep_{ai_settings['num_step']}\
 _units_{ai_settings['num_units']}_batch_{ai_settings['batch_size']}\
 _learning_rate_{str(ai_settings['learning_rate']).replace('0.', '')}_optimizer_{ai_settings['optimizer']}\
 _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.txt"""
