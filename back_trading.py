@@ -4,6 +4,7 @@ import numpy as np
 
 from data.code_list import coin_codes
 from library.ai_filter import train_model, use_model
+from library.ai_filter_v2 import filter_by_lstm_model
 from library.db_conn import get_min_candle
 from library.graphs import draw_candle_with_indicator
 from library.logging_pack import *
@@ -77,16 +78,16 @@ def run():
         # ai model 학습 또는 사용
         # use_ai_filter = True if input(f"AI 필터 사용 여부 : (y or n) ") == 'y' else False
         # train_ai_model = True if input(f"AI model 학습 여부 : (y or n) ") == 'y' else False
+        # ai_filter_num = int(input(f"ai_filter_num 입력: "))
         use_ai_filter = True
         train_ai_model = True
-        # ai_filter_num = 1001 1002 1003 1004
-        ai_filter_num = 999
-        # ai_filter_num = int(input(f"ai_filter_num 입력: "))
+        ai_filter_num = 997
 
         label = 1  # 1: 산다
         if use_ai_filter:
             if train_ai_model:
-                label = train_model(ai_filter_num, coin_df, code, unit, date_start)
+                # label = train_model(ai_filter_num, coin_df, code, unit, date_start)
+                label = filter_by_lstm_model(ai_filter_num, coin_df, code, unit, date_start)
             else:
                 label = use_model(coin_df, code)
 
@@ -108,7 +109,6 @@ def run_unit_list():
     date_start = '2020'
     # units = [60, 30, 15, 10, 5, 3, 1]
     min_unit_list = [10]
-    # ai_list = list(range(101, 119))
     ai_list = list(range(126, 138)) + list(range(1101, 1136))
     # UNIT 3의 ai_filter_num 101 돌려야됨  # unit 별 모델 트레이닝
     for min_unit in min_unit_list:
@@ -138,9 +138,8 @@ def run_start_unit_list():
     market_id = 1
     # model 학습 시 이용되는 sample data 시작 날짜 설정
     date_start_list = ['2020', '2019', '2018']
-    min_unit_list = [1, 3, 5]
-    ai_list = list(range(10001, 10003))
-
+    min_unit_list = [10, 3, 1]
+    ai_list = [1002, 1001] + list(range(10001, 10003)) + list(range(1110, 1136))
     # 데이터 시작 날짜별 트레이닝
     for date_start in date_start_list:
         # unit 별 모델 트레이닝
@@ -166,6 +165,6 @@ def run_start_unit_list():
 
 
 if __name__ == "__main__":
-    # run()
+    run()
     # run_unit_list()
-    run_start_unit_list()
+    # run_start_unit_list()

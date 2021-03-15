@@ -139,6 +139,7 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
         # model 평가
         loss, acc = model.evaluate(x_test, y_test, verbose=0)
         logger.debug(f"모델 정확도: {float(acc) * 100}%")
+        logger.debug(f"1 in y_pred: {1 in y_pred}, 0 in y_pred: {0 in y_pred}")
         back_testing(code, test_sample_df, y_pred, ai_settings, history, acc, date_start)
 
         # 모델 리턴해서 내일 오른다는 예측이 있을 경우 매수 떨어지면 매도

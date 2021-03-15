@@ -95,14 +95,14 @@ def save_hyperparams_n_results_from_model():
         ai_str = txt_list[-1]
         ai = ast.literal_eval(ai_str)
 
-        avg_loss = txt_list[16]
-        avg_acc = txt_list[20]
-        avg_val_loss = txt_list[24]
-        avg_val_acc = txt_list[28]
-        last_val_acc = txt_list[30]
-        max_val_acc = txt_list[32]
-        min_val_acc = txt_list[34]
-        val_acc_list = txt_list[35]
+        avg_loss = text.split("mean loss:")[1].split("\n")[1]
+        avg_acc = text.split("mean acc:")[1].split("\n")[1]
+        avg_val_loss = text.split("mean val_loss:")[1].split("\n")[1]
+        avg_val_acc = text.split("mean val_acc:")[1].split("\n")[1]
+        last_val_acc = text.split("last val_acc:")[1].split("\n")[1]
+        max_val_acc = text.split("MAX:")[1].split("\n")[1]
+        min_val_acc = text.split("MIN:")[1].split("\n")[1]
+        val_acc_list = text.split("MIN:")[1].split("\n")[2]
 
         unit = ai['table'][3:]
 
@@ -166,9 +166,9 @@ def get_val_accuracy():
 
 
 def edit_history():
-    dir_name = 'history'
-    from_text = "0.001"
-    to_text = "0.01"
+    dir_name = 'history/2020'
+    from_text = ", 'num_step':"
+    to_text = ",'n_pred': 1, 'num_step':"
 
     cwd = Path.cwd() / dir_name
     files = list(cwd.glob('*'))
@@ -196,7 +196,6 @@ def change_filename():
     # 파일명 변경 코드
     for file in files:
         fname = str(file)
-        # new_fname = fname.replace('model_', '')
         # new_fname = fname.replace('__', '_')
         new_fname = fname.replace('001', '01')
         # new_fname = fname.replace('epoch', 'epoch_')
@@ -212,8 +211,8 @@ def change_filename():
 
 
 def path_setting():
-    dir_name = 'models'
-    # dir_name = 'history'
+    # dir_name = 'models/2020'
+    dir_name = 'history/2020'
     cwd = Path.cwd() / dir_name
     print(cwd)
     files = list(cwd.glob('*'))

@@ -1107,7 +1107,7 @@ def get_ai_settings(ai_filter_num, min_unit):
             "n_pred": 1,
             "num_step": 5,
             "num_units": 200,
-            "epochs": 10,
+            "epochs": 1,
             "batch_size": 10,
             "learning_rate": 0.01,
             "optimizer": "adam",
@@ -1128,6 +1128,21 @@ def get_ai_settings(ai_filter_num, min_unit):
             "optimizer": "adam",
             "loss": "binary_crossentropy",
             "activation": "relu",
+            "is_continuously_train": False
+        }
+    # 테스트용 3
+    elif ai_filter_num == 997:
+        ai_settings = {
+            "table": f"min{min_unit}",
+            "n_pred": 3,
+            "num_step": 5,
+            "num_units": 50,
+            "epochs": 1,
+            "batch_size": 10,
+            "learning_rate": 0.01,
+            "optimizer": "adam",
+            "loss": "categorical_crossentropy",
+            "activation": "sigmoid",
             "is_continuously_train": False
         }
     else:
