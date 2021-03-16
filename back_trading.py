@@ -46,10 +46,7 @@ def save_graph(coin_df, code):
 
 def run():
     # 주식 또는 가상암호화폐 종목 코드 리스트 가져오기
-    # code_list = coin_codes
-    # total_profit, sum_rate = 0, 0
     # use_graph = True if input(f"그래프 저장 여부 : (y or n) ") == 'y' else False
-    use_graph = False
     # if use_graph not in ('y', 'n') or use_ai_filter not in ('y', 'n'):
     #     print('y 또는 n을 입력해주세요.')
     #     exit(1)
@@ -96,8 +93,6 @@ def run():
     else:
         logger.debug('데이터에 결측치가 존재합니다.')
 
-    # total_rate = sum_rate / len(code_list)
-    # logger.debug(f"총 수익: {total_profit}\n수익률: {total_rate}")
     logger.debug(f"시뮬 종료: {datetime.now()}\n소요 시간: {datetime.now() - simul_start}")
 
 
