@@ -11,8 +11,8 @@ from library.logging_pack import *
 from library.trading_indicators import bollinger_band
 
 
-def data_settings(market, unit, date_start):
-    price_df = get_min_candle(market=market, unit=unit, date_start=date_start)
+def data_settings(code, unit, date_start):
+    price_df = get_min_candle(code=code, unit=unit, date_start=date_start)
     # 결측치 존재 유무 확인
     invalid_data_cnt = len(price_df[price_df.isin([np.nan, np.inf, -np.inf]).any(1)])
 
@@ -51,25 +51,19 @@ def run():
     #     print('y 또는 n을 입력해주세요.')
     #     exit(1)
     # code = input(f"종목코드 입력: (예시. KRW-BTC or KRW-LTC)")
+    # unit = int(input(f"unit: (예시. 1: 1분봉, 3: 3분봉)"))
+
+    use_graph = False
     code = 'KRW-BTC'
-    if code == 'KRW-BTC':
-        market_id = 1
-    elif code == 'KRW-LTC':
-        market_id = 44
-    else:
-        market_id = int(input(f"종목 아이디: (예시. 1 or 44)"))
+    market_id = 60
     date_start = '2020'
-    unit = int(input(f"unit: (예시. 1: 1분봉, 3: 3분봉)"))
-    if unit in (1, 3):
-        market = market_id
-    else:
-        market = code
+    unit = 3
 
     logger.debug(f"종목 코드: {code} {market_id}")
     simul_start = datetime.now()
     # 종목별 데이터
     # $ 백테스팅 시작 날짜 설정
-    coin_df = data_settings(market=market, unit=unit, date_start=date_start)
+    coin_df = data_settings(code=code, unit=unit, date_start=date_start)
 
     if coin_df is not False:
         # ai model 학습 또는 사용
@@ -107,16 +101,12 @@ def run_unit_list():
     ai_list = list(range(126, 138)) + list(range(1101, 1136))
     # UNIT 3의 ai_filter_num 101 돌려야됨  # unit 별 모델 트레이닝
     for min_unit in min_unit_list:
-        if min_unit in (1, 3):
-            market = market_id
-        else:
-            market = code
         # ai setting 별 모델 트레이닝
         for ai_filter_num in ai_list:
             logger.debug(f"종목 코드: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num}")
             simul_start = datetime.now()
             # 종목별 데이터, 백테스팅 시작 날짜 설정
-            coin_df = data_settings(market=market, unit=min_unit, date_start=date_start)
+            coin_df = data_settings(code=code, unit=min_unit, date_start=date_start)
 
             if coin_df is not False:
                 # ai model 학습 또는 사용
@@ -139,16 +129,12 @@ def run_start_unit_list():
     for date_start in date_start_list:
         # unit 별 모델 트레이닝
         for min_unit in min_unit_list:
-            if min_unit in (1, 3):
-                market = market_id
-            else:
-                market = code
             # ai setting 별 모델 트레이닝
             for ai_filter_num in ai_list:
                 logger.debug(f"종목: {code} {market_id} min_unit:{min_unit} ai_filter_num:{ai_filter_num} {date_start}부터")
                 simul_start = datetime.now()
                 # 종목별 데이터, 백테스팅 시작 날짜 설정
-                coin_df = data_settings(market=market, unit=min_unit, date_start=date_start)
+                coin_df = data_settings(code=code, unit=min_unit, date_start=date_start)
 
                 if coin_df is not False:
                     # ai model 학습 또는 사용
