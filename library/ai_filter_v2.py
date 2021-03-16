@@ -2,7 +2,7 @@ import numpy as np
 from library.graphs import plot_model_fit_history
 from tensorflow.keras.models import load_model
 
-from library.ai_model_v2 import load_data, train_model, create_model, back_testing
+from library.ai_model_v2 import load_data, load_data_v2, train_model, create_model, back_testing
 from library.ai_setting_list import get_ai_settings
 from library.logging_pack import *
 
@@ -22,7 +22,8 @@ _loss_{ai_settings['loss']}_activation_{ai_settings['activation']}.h5"""
     except Exception:
         # 모델이 존재하지 않는 경우 학습
         # 스케일링 and "X_train", "X_test", "y_train", "y_test" 추출
-        dataset = load_data(df=df.copy(), ai_settings=ai_settings)
+        # dataset = load_data(df=df.copy(), ai_settings=ai_settings)
+        dataset = load_data_v2(df=df.copy(), ai_settings=ai_settings)
         # model 생성
         model, callback_list = create_model(dataset, ai_settings, code)
         # model 학습

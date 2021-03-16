@@ -62,26 +62,25 @@ def load_data_v2(df, ai_settings):
         logger.debug(f"테스트 데이터가 적어 학습 제외")
         exit(1)
 
+    # n_pred분 이후의 종가를 future에 저장
     df['future'] = df['close'].shift(-int(ai_settings['n_pred']))
 
     default_features = ['open', 'high', 'low', 'close', 'volume']
-    add_features = []
     extra_list = ['future']
-    all_features = default_features + add_features + extra_list
+    all_features = default_features + extra_list
 
     # 최소-최대 정규화
-    sample_df, eng_list = min_max_normal(df, all_features, extra_list)
+    sample_df, eng_list = min_max_normal_v2(df, all_features)
 
     # drop NaNs (비어있는 row는 제거)
     sample_df.dropna(inplace=True)
 
     # 레이블링 테이터
     # (num_step)일치 (n_feature)개 변수의 데이터를 사용해 다음날 data 예측
-    eng_list = eng_list + extra_list
     n_feature = len(eng_list) - 1  # next_rtn 를 제외한 feature 개수
 
     # 훈련, 검증, 테스트 데이터를 변수 데이터와 레이블 데이터로 나눈다
-    x_data, y_data = create_dataset_binary(sample_df, eng_list, ai_settings, n_feature)
+    x_data, y_data = create_dataset_binary_v2(sample_df, eng_list, ai_settings, n_feature)
 
     # 학습, 검증, 테스트 데이터 기간 분할 6:2:2
     result['x_train'], result['x_val'], result['x_test'] = data_split(x_data)
@@ -176,7 +175,7 @@ def create_model(dataset, ai_settings, code):
     model = Model(input_layer, output_layer)
     # 모델 학습 방식을 설정하여 모델 객체를 만들어낸다. (손실함수, 최적화함수, 모델 성능 판정에 사용되는 지표)
     model.compile(loss=ai_settings['loss'], optimizer=ai_settings['optimizer'], metrics=['accuracy'])
-    print(model.summary())
+    # print(model.summary())
     # model에 가중치 적용
     model, callback_list = get_checkpoint(dataset, model, ai_settings, code)
 
@@ -194,57 +193,6 @@ def train_model(dataset, model, ai_settings, callback_list):
     # fig = plot_model_fit_history(code, history, ai_settings['epochs'])
     # fig.show()
     return model, history
-
-
-def create_dataset_binary_v2(data, feature_list, ai_settings, n_feature):
-    '''
-    다음날 시종가 수익률 라벨링.
-    '''
-    # LSTM 모델에 넣을 변수 데이터 선택
-    train_xdata = np.array(data[feature_list[0:n_feature]])
-    # 레이블링 데이터를 만든다, next_rtn 값
-    train_ydata = np.array(data[[feature_list[n_feature]]])
-    step = ai_settings['num_step']
-    # 마지막 단계
-    m = np.arange(len(train_xdata) - step)
-    x, y = [], []
-    for i in m:
-        # 각 단계마다 사용할 학습 데이터 기간 정의 (step = 얼마만큼의 데이터 기간을 입력값으로 전달할지)
-        a = train_xdata[i:(i + step)]
-        x.append(a)
-    # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
-    # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
-    x_batch = np.reshape(np.array(x), (len(m), step, n_feature))
-
-    # n일 뒤 데이터 예측
-    # n_pred = ai_settings['n_pred'] - 1
-    # if n_pred == 0:
-    #     label_len = m + step
-    # else:
-    #     label_len = m[:-n_pred] + step
-    label_len = m + step
-
-    for i in label_len:
-        # 이진 분류르 하기 위한 next_rtn
-        # next_rtn = train_ydata[i + n_pred][0]
-        next_rtn = train_ydata[i][0]
-        # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
-        if next_rtn > 0:
-            label = 1
-        else:
-            label = 0
-        # 순차적으로 임시로 생성된 레이블을 저장
-        y.append(label)
-    # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
-    y_batch = np.reshape(np.array(y), (-1, 1))
-    y_batch = to_categorical(y_batch, 2)
-
-    # x_batch와 y_batch 길이 맞추기
-    # if n_pred == 0:
-    #     return x_batch, y_batch
-    # else:
-    #     return x_batch[:-n_pred], y_batch
-    return x_batch, y_batch
 
 
 def create_dataset_binary(data, feature_list, ai_settings, n_feature):
@@ -267,17 +215,10 @@ def create_dataset_binary(data, feature_list, ai_settings, n_feature):
     # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
     x_batch = np.reshape(np.array(x), (len(m), step, n_feature))
 
-    # n일 뒤 데이터 예측
-    # n_pred = ai_settings['n_pred'] - 1
-    # if n_pred == 0:
-    #     label_len = m + step
-    # else:
-    #     label_len = m[:-n_pred] + step
     label_len = m + step
 
     for i in label_len:
         # 이진 분류를 하기 위한 next_rtn
-        # next_rtn = train_ydata[i + n_pred][0]
         next_rtn = train_ydata[i][0]
         # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
         if next_rtn > 0:
@@ -290,11 +231,50 @@ def create_dataset_binary(data, feature_list, ai_settings, n_feature):
     y_batch = np.reshape(np.array(y), (-1, 1))
     y_batch = to_categorical(y_batch, 2)
 
-    # x_batch와 y_batch 길이 맞추기
-    # if n_pred == 0:
-    #     return x_batch, y_batch
-    # else:
-    #     return x_batch[:-n_pred], y_batch
+    return x_batch, y_batch
+
+
+def create_dataset_binary_v2(data, feature_list, ai_settings, n_feature):
+    '''
+    다음날 시종가 수익률 라벨링.
+    '''
+    # LSTM 모델에 넣을 변수 데이터 선택
+    train_xdata = np.array(data[feature_list[0:n_feature]])
+    # 레이블링 데이터를 만든다, future 값
+    train_ydata = np.array(data[[feature_list[n_feature]]])
+    step = ai_settings['num_step']
+    # 마지막 단계
+    m = np.arange(len(train_xdata) - step)
+    x, y = [], []
+    for i in m:
+        # 각 단계마다 사용할 학습 데이터 기간 정의 (step = 얼마만큼의 데이터 기간을 입력값으로 전달할지)
+        a = train_xdata[i:(i + step)]
+        x.append(a)
+    # 신경망 학습을 할 수 있도록 3차원 데이터 형태로 구성: batch_size: len(m), 시퀀스 내 행의 개수: step, feature 개수 (열의 개수): n
+    # data:np.array(x), (len(m), 5, 8) = (len(x_batch), len(x_batch[0]), len(x_batch[0][0]))
+    x_batch = np.reshape(np.array(x), (len(m), step, n_feature))
+
+    # n일 뒤 데이터 예측
+    label_len = m + step
+
+    print(f"close 값에 0이 있는지 확인: {0 in train_xdata[:][3]}")
+    for i in label_len:
+        # 이진 분류르 하기 위한 future
+        future_close = train_ydata[i][0]
+        close = train_xdata[i][3]
+        # 이진 분류: next_rtn가 0보다 크면 다음날 오를 것이라고 가정하여 해당 방향성을 레이블로 설정
+        if close == 0:
+            label = 1
+        elif future_close/close > ai_settings['rate']:
+            label = 1
+        else:
+            label = 0
+        # 순차적으로 임시로 생성된 레이블을 저장
+        y.append(label)
+    # 학습을 위한 1차원 열 벡터 형대로 변환 : (662,) -> (662, 1)
+    y_batch = np.reshape(np.array(y), (-1, 1))
+    y_batch = to_categorical(y_batch, 2)
+
     return x_batch, y_batch
 
 
@@ -304,6 +284,29 @@ def min_max_normal(tmp_df, all_features, extra_list):
     for x in all_features:
         if x in extra_list:
             continue
+        series = sample_df[x].copy()
+        values = series.values
+        values = values.reshape((len(values), 1))
+        # train the normalization. sklearn 라이브러리에서 정규화 객체를 받는다.
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        # 입력 데이터에 대해 정규화 범위를 탐색
+        scaler = scaler.fit(values)
+        # 데이터셋 정규화 및 출력 (최소-최대 정규화)
+        normalized = scaler.transform(values)
+        # 정규화된 데이터를 새로운 컬럼명으로 저장
+        new_feature = f'{x}_normal'
+        eng_list.append(new_feature)
+        sample_df[new_feature] = normalized
+    return sample_df, eng_list
+
+
+def min_max_normal_v2(tmp_df, all_features):
+    eng_list = []
+    sample_df = tmp_df.copy()
+    for x in all_features:
+        # future 값도 포함하여 정규화 해준다.
+        # if x in extra_list:
+        #     continue
         series = sample_df[x].copy()
         values = series.values
         values = values.reshape((len(values), 1))
